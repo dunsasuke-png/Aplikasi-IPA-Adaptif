@@ -11,6 +11,15 @@
         android:orientation="vertical">
 
         <ImageView
+            android:id="@+id/btnKembali"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="8dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="@color/green_dark" />
+
+        <ImageView
             android:id="@+id/imgTumbuhan"
             android:layout_width="match_parent"
             android:layout_height="250dp"

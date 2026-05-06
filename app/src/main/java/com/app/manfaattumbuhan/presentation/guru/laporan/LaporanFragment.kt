@@ -13,6 +13,7 @@ import com.app.manfaattumbuhan.R
 import com.app.manfaattumbuhan.data.local.TokenManager
 import com.app.manfaattumbuhan.databinding.FragmentLaporanBinding
 import com.app.manfaattumbuhan.presentation.adapter.LaporanAdapter
+import com.bumptech.glide.Glide
 
 class LaporanFragment : Fragment() {
 
@@ -36,6 +37,15 @@ class LaporanFragment : Fragment() {
         val adapter = LaporanAdapter()
         binding.rvLaporan.layoutManager = LinearLayoutManager(context)
         binding.rvLaporan.adapter = adapter
+
+        val fotoUrl = TokenManager.getGuruFoto()
+        if (fotoUrl.isNotBlank()) {
+            Glide.with(this)
+                .load(fotoUrl)
+                .placeholder(R.drawable.avatar_guru)
+                .error(R.drawable.avatar_guru)
+                .into(binding.imgProfile)
+        }
 
         binding.imgProfile.setOnClickListener {
             findNavController().navigate(R.id.action_laporan_to_profil)

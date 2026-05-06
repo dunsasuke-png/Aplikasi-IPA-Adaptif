@@ -69,6 +69,8 @@ class ProfilGuruFragment : Fragment() {
 
         binding.btnLogout.setOnClickListener {
             TokenManager.clear()
+            Glide.get(requireContext()).clearMemory()
+            binding.imgAvatarGuru.setImageResource(R.drawable.avatar_guru)
             val intent = Intent(requireContext(), LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)

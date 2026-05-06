@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.app.manfaattumbuhan.R
 import com.app.manfaattumbuhan.data.remote.model.SiswaInfo
 import com.app.manfaattumbuhan.databinding.ItemSiswaBinding
+import com.bumptech.glide.Glide
 
 class SiswaAdapter(
     private val onEdit: ((SiswaInfo) -> Unit)? = null,
@@ -20,7 +21,16 @@ class SiswaAdapter(
         fun bind(siswa: SiswaInfo) {
             binding.tvNamaSiswa.text = siswa.nama
             binding.tvKelasSiswa.text = "NISN: ${siswa.nim} | Kelas: ${siswa.kelas}"
-            binding.imgAvatar.setImageResource(R.drawable.avatar_siswa)
+
+            if (!siswa.foto_profil.isNullOrBlank()) {
+                Glide.with(binding.root.context)
+                    .load(siswa.foto_profil)
+                    .placeholder(R.drawable.avatar_siswa)
+                    .error(R.drawable.avatar_siswa)
+                    .into(binding.imgAvatar)
+            } else {
+                binding.imgAvatar.setImageResource(R.drawable.avatar_siswa)
+            }
 
             binding.btnEditSiswa.setOnClickListener { onEdit?.invoke(siswa) }
             binding.btnDeleteSiswa.setOnClickListener { onDelete?.invoke(siswa) }
