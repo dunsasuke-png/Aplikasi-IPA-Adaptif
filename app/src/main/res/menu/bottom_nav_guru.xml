@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/kelolaSoalFragment"
+        android:icon="@drawable/ic_quiz"
+        android:title="Soal" />
+
+    <item
+        android:id="@+id/kelolaAkunFragment"
+        android:icon="@drawable/ic_person"
+        android:title="Akun" />
+
+    <item
+        android:id="@+id/laporanFragment"
+        android:icon="@drawable/ic_chart"
+        android:title="Laporan" />
+
+</menu>

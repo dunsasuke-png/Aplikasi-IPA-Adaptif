@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+    <!-- Background -->
+    <path android:fillColor="#E8F5E9" android:pathData="M0,0h200v200h-200z" />
+    <!-- Ground -->
+    <path android:fillColor="#8D6E63" android:pathData="M0,170h200v30h-200z" />
+    <!-- Main stem -->
+    <path android:strokeColor="#4CAF50" android:strokeWidth="3.5" android:pathData="M100,170 Q100,130 100,70" />
+    <!-- Branch left -->
+    <path android:strokeColor="#4CAF50" android:strokeWidth="2.5" android:pathData="M100,120 Q80,105 65,95" />
+    <!-- Branch right -->
+    <path android:strokeColor="#4CAF50" android:strokeWidth="2.5" android:pathData="M100,110 Q120,95 140,90" />
+    <!-- Leaves -->
+    <path android:fillColor="#66BB6A" android:pathData="M100,130 Q85,125 80,135 Q90,138 100,130z" />
+    <path android:fillColor="#66BB6A" android:pathData="M100,125 Q115,120 120,130 Q110,133 100,125z" />
+    <path android:fillColor="#66BB6A" android:pathData="M65,95 Q55,88 50,98 Q58,100 65,95z" />
+    <path android:fillColor="#66BB6A" android:pathData="M140,90 Q150,83 152,93 Q145,95 140,90z" />
+    <!-- Cotton boll 1 (top) -->
+    <path android:fillColor="#FAFAFA" android:pathData="M100,60 Q90,50 95,42 Q100,35 105,42 Q110,50 100,60z" />
+    <path android:fillColor="#F5F5F5" android:pathData="M95,55 Q85,48 90,40 Q95,35 95,42z" />
+    <path android:fillColor="#F5F5F5" android:pathData="M105,55 Q115,48 110,40 Q105,35 105,42z" />
+    <!-- Cotton boll calyx top -->
+    <path android:fillColor="#388E3C" android:pathData="M96,62 L100,55 L104,62 Q100,65 96,62z" />
+    <!-- Cotton boll 2 (left) -->
+    <path android:fillColor="#FAFAFA" android:pathData="M60,88 Q50,78 55,70 Q60,65 65,70 Q70,78 60,88z" />
+    <path android:fillColor="#F5F5F5" android:pathData="M55,83 Q45,76 50,68 Q55,65 55,70z" />
+    <!-- Cotton boll calyx left -->
+    <path android:fillColor="#388E3C" android:pathData="M56,90 L60,83 L64,90 Q60,93 56,90z" />
+    <!-- Cotton boll 3 (right) -->
+    <path android:fillColor="#FAFAFA" android:pathData="M145,82 Q135,72 140,64 Q145,59 150,64 Q155,72 145,82z" />
+    <path android:fillColor="#F5F5F5" android:pathData="M140,77 Q130,70 135,62 Q140,59 140,64z" />
+    <!-- Cotton boll calyx right -->
+    <path android:fillColor="#388E3C" android:pathData="M141,84 L145,77 L149,84 Q145,87 141,84z" />
+</vector>
