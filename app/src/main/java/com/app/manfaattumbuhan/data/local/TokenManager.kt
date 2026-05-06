@@ -13,6 +13,9 @@ object TokenManager {
     private const val KEY_USER_KELAS = "user_kelas"
     private const val KEY_GURU_FOTO = "guru_foto"
     private const val KEY_SISWA_FOTO = "siswa_foto"
+    private const val KEY_GURU_NIP = "guru_nip"
+    private const val KEY_GURU_SEKOLAH = "guru_sekolah"
+    private const val KEY_GURU_MAPEL = "guru_mapel"
 
     private lateinit var prefs: SharedPreferences
 
@@ -51,6 +54,9 @@ object TokenManager {
     fun getUserKelas(): String = prefs.getString(KEY_USER_KELAS, "") ?: ""
     fun getGuruFoto(): String = prefs.getString(KEY_GURU_FOTO, "") ?: ""
     fun getSiswaFoto(): String = prefs.getString(KEY_SISWA_FOTO, "") ?: ""
+    fun getGuruNip(): String = prefs.getString(KEY_GURU_NIP, "198507152010012009") ?: "198507152010012009"
+    fun getGuruSekolah(): String = prefs.getString(KEY_GURU_SEKOLAH, "SLB Negeri Harapan") ?: "SLB Negeri Harapan"
+    fun getGuruMapel(): String = prefs.getString(KEY_GURU_MAPEL, "IPA") ?: "IPA"
 
     fun saveGuruFoto(url: String) {
         prefs.edit().putString(KEY_GURU_FOTO, url).apply()
@@ -60,9 +66,31 @@ object TokenManager {
         prefs.edit().putString(KEY_SISWA_FOTO, url).apply()
     }
 
+    fun saveGuruInfo(nip: String, sekolah: String, mapel: String) {
+        prefs.edit().apply {
+            putString(KEY_GURU_NIP, nip)
+            putString(KEY_GURU_SEKOLAH, sekolah)
+            putString(KEY_GURU_MAPEL, mapel)
+            apply()
+        }
+    }
+
     fun isLoggedIn(): Boolean = getToken().isNotBlank()
 
     fun clear() {
+        val guruFoto = prefs.getString(KEY_GURU_FOTO, "") ?: ""
+        val siswaFoto = prefs.getString(KEY_SISWA_FOTO, "") ?: ""
+        val guruNip = prefs.getString(KEY_GURU_NIP, "") ?: ""
+        val guruSekolah = prefs.getString(KEY_GURU_SEKOLAH, "") ?: ""
+        val guruMapel = prefs.getString(KEY_GURU_MAPEL, "") ?: ""
         prefs.edit().clear().apply()
+        prefs.edit().apply {
+            putString(KEY_GURU_FOTO, guruFoto)
+            putString(KEY_SISWA_FOTO, siswaFoto)
+            putString(KEY_GURU_NIP, guruNip)
+            putString(KEY_GURU_SEKOLAH, guruSekolah)
+            putString(KEY_GURU_MAPEL, guruMapel)
+            apply()
+        }
     }
 }

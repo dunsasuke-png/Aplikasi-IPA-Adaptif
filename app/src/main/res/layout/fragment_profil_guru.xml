@@ -87,6 +87,7 @@
                     android:textSize="14sp" />
 
                 <TextView
+                    android:id="@+id/tvNipValue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="198507152010012009"
@@ -109,6 +110,7 @@
                     android:textSize="14sp" />
 
                 <TextView
+                    android:id="@+id/tvSekolahValue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="SLB Negeri Harapan"
@@ -131,6 +133,7 @@
                     android:textSize="14sp" />
 
                 <TextView
+                    android:id="@+id/tvMapelValue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="IPA"

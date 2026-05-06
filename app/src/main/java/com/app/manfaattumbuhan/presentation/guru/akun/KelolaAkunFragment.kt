@@ -57,10 +57,6 @@ class KelolaAkunFragment : Fragment() {
             err?.let { Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show() }
         }
 
-        binding.btnLihatLaporan.setOnClickListener {
-            findNavController().navigate(R.id.laporanFragment)
-        }
-
         binding.btnTambahSiswa.setOnClickListener {
             showAddDialog()
         }
