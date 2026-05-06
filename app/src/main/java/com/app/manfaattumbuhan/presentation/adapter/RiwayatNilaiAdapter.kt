@@ -21,10 +21,17 @@ class RiwayatNilaiAdapter : ListAdapter<NilaiApi, RiwayatNilaiAdapter.ViewHolder
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
-        holder.binding.tvTingkat.text = item.soal?.judul ?: "Soal"
+        holder.binding.tvTingkat.text = item.soal?.judul ?: formatSoalId(item.soal_id)
         holder.binding.tvDetail.text = item.catatan ?: "-"
         holder.binding.tvTanggal.text = item.created_at?.take(10) ?: "-"
         holder.binding.tvNilai.text = String.format("%.0f", item.nilai)
+    }
+
+    private fun formatSoalId(soalId: String): String {
+        if (soalId.startsWith("latihan-")) {
+            return "Latihan ${soalId.removePrefix("latihan-")}"
+        }
+        return "Latihan"
     }
 
     class DiffCallback : DiffUtil.ItemCallback<NilaiApi>() {
