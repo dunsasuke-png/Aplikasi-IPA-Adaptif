@@ -104,12 +104,25 @@ class KelolaSoalFragment : Fragment() {
     }
 
     private fun setupListeners() {
+        loadGuruPhoto()
+
         binding.imgProfile.setOnClickListener {
             findNavController().navigate(R.id.action_soal_to_profil)
         }
 
         binding.btnBuatSoal.setOnClickListener {
             showCreateDialog()
+        }
+    }
+
+    private fun loadGuruPhoto() {
+        val fotoUrl = TokenManager.getGuruFoto()
+        if (fotoUrl.isNotBlank()) {
+            Glide.with(this)
+                .load(fotoUrl)
+                .placeholder(R.drawable.avatar_guru)
+                .error(R.drawable.avatar_guru)
+                .into(binding.imgProfile)
         }
     }
 

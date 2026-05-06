@@ -16,6 +16,7 @@ import com.app.manfaattumbuhan.data.local.TokenManager
 import com.app.manfaattumbuhan.data.remote.model.SiswaInfo
 import com.app.manfaattumbuhan.databinding.FragmentKelolaAkunBinding
 import com.app.manfaattumbuhan.presentation.adapter.SiswaAdapter
+import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class KelolaAkunFragment : Fragment() {
@@ -62,6 +63,15 @@ class KelolaAkunFragment : Fragment() {
 
         binding.btnTambahSiswa.setOnClickListener {
             showAddDialog()
+        }
+
+        val fotoUrl = TokenManager.getGuruFoto()
+        if (fotoUrl.isNotBlank()) {
+            Glide.with(this)
+                .load(fotoUrl)
+                .placeholder(R.drawable.avatar_guru)
+                .error(R.drawable.avatar_guru)
+                .into(binding.imgProfile)
         }
 
         binding.imgProfile.setOnClickListener {
