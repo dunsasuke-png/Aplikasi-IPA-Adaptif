@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import com.app.manfaattumbuhan.databinding.FragmentDetailMateriBinding
 
 class DetailMateriFragment : Fragment() {
@@ -36,9 +35,7 @@ class DetailMateriFragment : Fragment() {
             binding.imgTumbuhan.setImageResource(imageRes)
         }
 
-        binding.btnKembali.setOnClickListener {
-            findNavController().navigateUp()
-        }
+
     }
 
     override fun onDestroyView() {

@@ -67,6 +67,8 @@ class ProfilFragment : Fragment() {
         }
 
         binding.btnKeluar.setOnClickListener {
+            Glide.get(requireContext()).clearMemory()
+            binding.imgAvatar.setImageResource(R.drawable.avatar_siswa)
             TokenManager.clear()
             val intent = Intent(requireContext(), LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -78,13 +80,18 @@ class ProfilFragment : Fragment() {
         binding.tvNama.text = TokenManager.getUserName()
         binding.tvKelas.text = TokenManager.getUserKelas()
         binding.tvSekolah.text = "NISN: ${TokenManager.getUserNim()}"
-        binding.imgAvatar.setImageResource(R.drawable.avatar_siswa)
         binding.tvStatusBadge.text = "SISWA AKTIF"
 
-        binding.tvTotalLatihan.text = "-"
-        binding.tvLabelLatihan.text = "Latihan"
-        binding.tvStreak.text = "-"
-        binding.tvLabelStreak.text = "Beruntun"
+        val fotoUrl = TokenManager.getSiswaFoto()
+        if (fotoUrl.isNotBlank()) {
+            Glide.with(this)
+                .load(fotoUrl)
+                .placeholder(R.drawable.avatar_siswa)
+                .error(R.drawable.avatar_siswa)
+                .into(binding.imgAvatar)
+        } else {
+            binding.imgAvatar.setImageResource(R.drawable.avatar_siswa)
+        }
     }
 
     private fun showEditProfilDialog() {
@@ -172,8 +179,12 @@ class ProfilFragment : Fragment() {
                         updatedSiswa.id,
                         updatedSiswa.nama,
                         updatedSiswa.nim,
-                        updatedSiswa.kelas
+                        updatedSiswa.kelas,
+                        updatedSiswa.foto_profil
                     )
+                    if (updatedSiswa.foto_profil != null) {
+                        TokenManager.saveSiswaFoto(updatedSiswa.foto_profil)
+                    }
                     loadProfilData()
                     uploadedFotoUrl = null
                     Toast.makeText(requireContext(), "Profil berhasil diperbarui", Toast.LENGTH_SHORT).show()

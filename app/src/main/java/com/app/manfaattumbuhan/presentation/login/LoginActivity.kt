@@ -92,7 +92,7 @@ class LoginActivity : AppCompatActivity() {
                     finish()
                 }
                 is LoginResult.SiswaSuccess -> {
-                    TokenManager.saveSiswaLogin(result.token, result.id, result.nama, result.nim, result.kelas)
+                    TokenManager.saveSiswaLogin(result.token, result.id, result.nama, result.nim, result.kelas, result.fotoProfil)
                     val intent = Intent(this, SiswaActivity::class.java)
                     intent.putExtra("USER_NAME", result.nama)
                     intent.putExtra("USER_ID", result.id)

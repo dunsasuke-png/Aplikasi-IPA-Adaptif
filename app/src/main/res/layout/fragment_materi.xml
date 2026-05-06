@@ -64,34 +64,5 @@
             android:layout_weight="1" />
     </LinearLayout>
 
-    <!-- Bottom Buttons -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="16dp">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnKembali"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_marginEnd="8dp"
-            android:layout_weight="1"
-            android:text="← Kembali"
-            android:textColor="@color/green_primary"
-            app:cornerRadius="12dp"
-            app:strokeColor="@color/green_primary" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnLanjut"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="8dp"
-            android:layout_weight="1"
-            android:text="Lanjut →"
-            app:backgroundTint="@color/red_button"
-            app:cornerRadius="12dp" />
-    </LinearLayout>
 </LinearLayout>

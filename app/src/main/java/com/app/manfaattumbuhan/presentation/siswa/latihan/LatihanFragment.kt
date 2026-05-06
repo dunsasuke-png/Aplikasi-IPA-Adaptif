@@ -245,9 +245,8 @@ class LatihanFragment : Fragment() {
         val dialogBuilder = MaterialAlertDialogBuilder(requireContext())
             .setTitle(title)
             .setMessage(message.toString())
-            .setPositiveButton("Lanjut ke Level $assignedLevel") { _, _ ->
-                val bundle = Bundle().apply { putString("tingkat", assignedLevel) }
-                findNavController().navigate(R.id.action_pilihLevel_to_latihan, bundle)
+            .setPositiveButton("Lihat Tingkat Kesulitan") { _, _ ->
+                findNavController().navigate(R.id.action_latihan_to_pilihLevel)
             }
             .setCancelable(false)
 

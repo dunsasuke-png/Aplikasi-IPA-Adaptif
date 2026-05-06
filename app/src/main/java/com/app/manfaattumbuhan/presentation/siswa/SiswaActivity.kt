@@ -1,6 +1,7 @@
 package com.app.manfaattumbuhan.presentation.siswa
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
@@ -21,5 +22,17 @@ class SiswaActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
 
         binding.bottomNavSiswa.setupWithNavController(navController)
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.latihanFragment,
+                R.id.pilihLevelFragment -> {
+                    binding.bottomNavSiswa.visibility = View.GONE
+                }
+                else -> {
+                    binding.bottomNavSiswa.visibility = View.VISIBLE
+                }
+            }
+        }
     }
 }
