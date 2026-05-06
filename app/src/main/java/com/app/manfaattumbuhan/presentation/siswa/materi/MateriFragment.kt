@@ -52,13 +52,7 @@ class MateriFragment : Fragment() {
             adapter.submitList(list)
         }
 
-        binding.btnKembali.setOnClickListener {
-            findNavController().navigateUp()
-        }
 
-        binding.btnLanjut.setOnClickListener {
-            findNavController().navigate(R.id.action_materi_to_latihan)
-        }
     }
 
     override fun onDestroyView() {

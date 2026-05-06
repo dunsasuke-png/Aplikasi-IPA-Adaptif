@@ -12,6 +12,7 @@ object TokenManager {
     private const val KEY_USER_NIM = "user_nim"
     private const val KEY_USER_KELAS = "user_kelas"
     private const val KEY_GURU_FOTO = "guru_foto"
+    private const val KEY_SISWA_FOTO = "siswa_foto"
 
     private lateinit var prefs: SharedPreferences
 
@@ -29,7 +30,7 @@ object TokenManager {
         }
     }
 
-    fun saveSiswaLogin(token: String, id: String, nama: String, nim: String, kelas: String) {
+    fun saveSiswaLogin(token: String, id: String, nama: String, nim: String, kelas: String, fotoProfil: String? = null) {
         prefs.edit().apply {
             putString(KEY_TOKEN, "Bearer $token")
             putString(KEY_USER_ROLE, "SISWA")
@@ -37,6 +38,7 @@ object TokenManager {
             putString(KEY_USER_NAME, nama)
             putString(KEY_USER_NIM, nim)
             putString(KEY_USER_KELAS, kelas)
+            putString(KEY_SISWA_FOTO, fotoProfil ?: "")
             apply()
         }
     }
@@ -48,9 +50,14 @@ object TokenManager {
     fun getUserNim(): String = prefs.getString(KEY_USER_NIM, "") ?: ""
     fun getUserKelas(): String = prefs.getString(KEY_USER_KELAS, "") ?: ""
     fun getGuruFoto(): String = prefs.getString(KEY_GURU_FOTO, "") ?: ""
+    fun getSiswaFoto(): String = prefs.getString(KEY_SISWA_FOTO, "") ?: ""
 
     fun saveGuruFoto(url: String) {
         prefs.edit().putString(KEY_GURU_FOTO, url).apply()
+    }
+
+    fun saveSiswaFoto(url: String) {
+        prefs.edit().putString(KEY_SISWA_FOTO, url).apply()
     }
 
     fun isLoggedIn(): Boolean = getToken().isNotBlank()

@@ -83,7 +83,8 @@ class LoginViewModel : ViewModel() {
                     id = data.siswa.id,
                     nama = data.siswa.nama,
                     nim = data.siswa.nim,
-                    kelas = data.siswa.kelas
+                    kelas = data.siswa.kelas,
+                    fotoProfil = data.siswa.foto_profil
                 )
             )
         } else {
@@ -95,6 +96,6 @@ class LoginViewModel : ViewModel() {
 
 sealed class LoginResult {
     data class GuruSuccess(val token: String, val id: String, val nama: String) : LoginResult()
-    data class SiswaSuccess(val token: String, val id: String, val nama: String, val nim: String, val kelas: String) : LoginResult()
+    data class SiswaSuccess(val token: String, val id: String, val nama: String, val nim: String, val kelas: String, val fotoProfil: String? = null) : LoginResult()
     data class Error(val message: String) : LoginResult()
 }
