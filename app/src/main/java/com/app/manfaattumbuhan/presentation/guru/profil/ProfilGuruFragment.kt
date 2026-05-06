@@ -69,8 +69,6 @@ class ProfilGuruFragment : Fragment() {
 
         binding.btnLogout.setOnClickListener {
             TokenManager.clear()
-            Glide.get(requireContext()).clearMemory()
-            binding.imgAvatarGuru.setImageResource(R.drawable.avatar_guru)
             val intent = Intent(requireContext(), LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
@@ -79,6 +77,9 @@ class ProfilGuruFragment : Fragment() {
 
     private fun loadProfilData() {
         binding.tvNamaGuru.text = TokenManager.getUserName()
+        binding.tvNipValue.text = TokenManager.getGuruNip()
+        binding.tvSekolahValue.text = TokenManager.getGuruSekolah()
+        binding.tvMapelValue.text = TokenManager.getGuruMapel()
 
         val fotoUrl = TokenManager.getGuruFoto()
         if (fotoUrl.isNotBlank()) {
@@ -90,6 +91,9 @@ class ProfilGuruFragment : Fragment() {
         uploadedFotoUrl = null
         val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_edit_profil_guru, null)
         val etNama = dialogView.findViewById<EditText>(R.id.etEditNamaGuru)
+        val etNip = dialogView.findViewById<EditText>(R.id.etEditNipGuru)
+        val etSekolah = dialogView.findViewById<EditText>(R.id.etEditSekolahGuru)
+        val etMapel = dialogView.findViewById<EditText>(R.id.etEditMapelGuru)
         val btnPilihFoto = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnPilihFotoGuru)
         val imgPreview = dialogView.findViewById<ImageView>(R.id.imgPreviewFotoGuru)
         val progressFoto = dialogView.findViewById<ProgressBar>(R.id.progressFotoGuru)
@@ -100,6 +104,9 @@ class ProfilGuruFragment : Fragment() {
         dialogFotoStatus = tvFotoStatus
 
         etNama.setText(TokenManager.getUserName())
+        etNip.setText(TokenManager.getGuruNip())
+        etSekolah.setText(TokenManager.getGuruSekolah())
+        etMapel.setText(TokenManager.getGuruMapel())
 
         val existingFoto = TokenManager.getGuruFoto()
         if (existingFoto.isNotBlank()) {
@@ -125,6 +132,11 @@ class ProfilGuruFragment : Fragment() {
                 val token = TokenManager.getToken()
                 val userId = TokenManager.getUserId()
                 TokenManager.saveGuruLogin(token.removePrefix("Bearer "), userId, nama)
+
+                val nip = etNip.text.toString().trim()
+                val sekolah = etSekolah.text.toString().trim()
+                val mapel = etMapel.text.toString().trim()
+                TokenManager.saveGuruInfo(nip, sekolah, mapel)
 
                 if (uploadedFotoUrl != null) {
                     TokenManager.saveGuruFoto(uploadedFotoUrl!!)
