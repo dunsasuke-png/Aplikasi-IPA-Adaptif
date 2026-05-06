@@ -49,8 +49,8 @@ object StaticData {
         ),
         User(
             id = 100,
-            nama = "Ibu Guru Sari",
-            username = "guru",
+            nama = "Admin Guru",
+            username = "Admin Guru",
             role = UserRole.GURU,
             kelas = "",
             sekolah = "SLB Negeri Harapan",
@@ -63,7 +63,7 @@ object StaticData {
         "andi" to "andi123",
         "citra" to "citra123",
         "dian" to "dian123",
-        "guru" to "guru123"
+        "Admin Guru" to "guru123"
     )
 
     val tumbuhanList = listOf(
