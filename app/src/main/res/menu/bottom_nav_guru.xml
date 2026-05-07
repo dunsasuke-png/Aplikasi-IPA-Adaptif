@@ -2,9 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/kelolaSoalFragment"
-        android:icon="@drawable/ic_quiz"
-        android:title="Soal" />
+        android:id="@+id/dashboardGuruFragment"
+        android:icon="@drawable/ic_home"
+        android:title="Beranda" />
 
     <item
         android:id="@+id/kelolaAkunFragment"

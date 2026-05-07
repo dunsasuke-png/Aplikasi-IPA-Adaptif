@@ -1,6 +1,7 @@
 package com.app.manfaattumbuhan.presentation.guru
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
@@ -21,5 +22,18 @@ class GuruActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
 
         binding.bottomNavGuru.setupWithNavController(navController)
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.profilGuruFragment,
+                R.id.kelolaSoalFragment,
+                R.id.kelolaMateriFragment -> {
+                    binding.bottomNavGuru.visibility = View.GONE
+                }
+                else -> {
+                    binding.bottomNavGuru.visibility = View.VISIBLE
+                }
+            }
+        }
     }
 }

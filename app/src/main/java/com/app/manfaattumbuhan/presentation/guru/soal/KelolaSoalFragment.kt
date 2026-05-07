@@ -106,6 +106,10 @@ class KelolaSoalFragment : Fragment() {
     private fun setupListeners() {
         loadGuruPhoto()
 
+        binding.btnBack.setOnClickListener {
+            findNavController().navigateUp()
+        }
+
         binding.imgProfile.setOnClickListener {
             findNavController().navigate(R.id.action_soal_to_profil)
         }

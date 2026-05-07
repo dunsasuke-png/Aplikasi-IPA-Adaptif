@@ -3,7 +3,37 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_guru"
-    app:startDestination="@id/kelolaSoalFragment">
+    app:startDestination="@id/dashboardGuruFragment">
+
+    <fragment
+        android:id="@+id/dashboardGuruFragment"
+        android:name="com.app.manfaattumbuhan.presentation.guru.dashboard.DashboardGuruFragment"
+        android:label="Dashboard"
+        tools:layout="@layout/fragment_dashboard_guru">
+
+        <action
+            android:id="@+id/action_dashboard_to_profil"
+            app:destination="@id/profilGuruFragment" />
+
+        <action
+            android:id="@+id/action_dashboard_to_materi"
+            app:destination="@id/kelolaMateriFragment" />
+
+        <action
+            android:id="@+id/action_dashboard_to_soal"
+            app:destination="@id/kelolaSoalFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/kelolaMateriFragment"
+        android:name="com.app.manfaattumbuhan.presentation.guru.materi.KelolaMateriFragment"
+        android:label="Kelola Materi"
+        tools:layout="@layout/fragment_kelola_materi">
+
+        <action
+            android:id="@+id/action_materi_guru_to_profil"
+            app:destination="@id/profilGuruFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/kelolaSoalFragment"

@@ -113,6 +113,34 @@ interface ApiService {
         @Path("id") id: String
     ): Response<ApiResponse<Nothing>>
 
+    // Materi (Guru)
+    @GET("api/guru/materi")
+    suspend fun getMateriList(
+        @Header("Authorization") token: String,
+        @Query("search") search: String? = null,
+        @Query("page") page: Int = 1,
+        @Query("limit") limit: Int = 100
+    ): Response<ApiResponse<MateriListResponse>>
+
+    @POST("api/guru/materi")
+    suspend fun createMateri(
+        @Header("Authorization") token: String,
+        @Body request: CreateMateriRequest
+    ): Response<ApiResponse<MateriApi>>
+
+    @PUT("api/guru/materi/{id}")
+    suspend fun updateMateri(
+        @Header("Authorization") token: String,
+        @Path("id") id: String,
+        @Body request: UpdateMateriRequest
+    ): Response<ApiResponse<MateriApi>>
+
+    @DELETE("api/guru/materi/{id}")
+    suspend fun deleteMateri(
+        @Header("Authorization") token: String,
+        @Path("id") id: String
+    ): Response<ApiResponse<Nothing>>
+
     // Upload
     @Multipart
     @POST("api/upload")
