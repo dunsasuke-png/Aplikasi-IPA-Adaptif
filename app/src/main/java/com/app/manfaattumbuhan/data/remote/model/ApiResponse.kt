@@ -133,6 +133,40 @@ data class NilaiListResponse(
     val pagination: Pagination
 )
 
+// Materi
+data class MateriApi(
+    val id: String,
+    val nama: String,
+    val deskripsi: String,
+    val manfaat: String,
+    val gambar_url: String?,
+    val urutan: Int,
+    val guru_id: String,
+    val created_at: String?,
+    val updated_at: String?
+)
+
+data class CreateMateriRequest(
+    val nama: String,
+    val deskripsi: String,
+    val manfaat: String,
+    val gambar_url: String? = null,
+    val urutan: Int = 0
+)
+
+data class UpdateMateriRequest(
+    val nama: String? = null,
+    val deskripsi: String? = null,
+    val manfaat: String? = null,
+    val gambar_url: String? = null,
+    val urutan: Int? = null
+)
+
+data class MateriListResponse(
+    val materi: List<MateriApi>,
+    val pagination: Pagination
+)
+
 // Upload
 data class UploadResponse(
     val url: String,

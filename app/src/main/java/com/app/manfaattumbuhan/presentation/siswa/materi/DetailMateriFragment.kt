@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.app.manfaattumbuhan.R
 import com.app.manfaattumbuhan.databinding.FragmentDetailMateriBinding
+import com.bumptech.glide.Glide
 
 class DetailMateriFragment : Fragment() {
 
@@ -28,11 +30,19 @@ class DetailMateriFragment : Fragment() {
         val deskripsi = arguments?.getString("tumbuhanDeskripsi") ?: ""
         val manfaat = arguments?.getString("tumbuhanManfaat") ?: ""
         val imageRes = arguments?.getInt("tumbuhanImage") ?: 0
+        val gambarUrl = arguments?.getString("tumbuhanGambarUrl") ?: ""
 
         binding.tvNamaTumbuhan.text = nama
         binding.tvDeskripsi.text = deskripsi
         binding.tvManfaat.text = manfaat
-        if (imageRes != 0) {
+
+        if (gambarUrl.isNotBlank()) {
+            Glide.with(this)
+                .load(gambarUrl)
+                .placeholder(R.drawable.img_padi)
+                .error(R.drawable.img_padi)
+                .into(binding.imgTumbuhan)
+        } else if (imageRes != 0) {
             binding.imgTumbuhan.setImageResource(imageRes)
         }
 

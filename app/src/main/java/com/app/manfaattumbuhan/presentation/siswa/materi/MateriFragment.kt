@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.app.manfaattumbuhan.R
+import com.app.manfaattumbuhan.data.local.TokenManager
 import com.app.manfaattumbuhan.data.repository.TumbuhanRepositoryImpl
 import com.app.manfaattumbuhan.databinding.FragmentMateriBinding
 import com.app.manfaattumbuhan.domain.usecase.GetTumbuhanUseCase
@@ -33,6 +34,8 @@ class MateriFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        TokenManager.init(requireContext())
+
         val adapter = TumbuhanAdapter { tumbuhan ->
             val bundle = Bundle().apply {
                 putInt("tumbuhanId", tumbuhan.id)
@@ -40,6 +43,7 @@ class MateriFragment : Fragment() {
                 putString("tumbuhanDeskripsi", tumbuhan.deskripsi)
                 putString("tumbuhanManfaat", tumbuhan.manfaat)
                 putInt("tumbuhanImage", tumbuhan.imageRes)
+                putString("tumbuhanGambarUrl", tumbuhan.gambarUrl ?: "")
             }
             findNavController().navigate(R.id.action_materi_to_detail, bundle)
         }

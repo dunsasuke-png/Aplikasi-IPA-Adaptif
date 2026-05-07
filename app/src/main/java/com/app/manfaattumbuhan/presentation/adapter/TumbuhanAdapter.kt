@@ -5,8 +5,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.app.manfaattumbuhan.R
 import com.app.manfaattumbuhan.databinding.ItemTumbuhanBinding
 import com.app.manfaattumbuhan.domain.model.Tumbuhan
+import com.bumptech.glide.Glide
 
 class TumbuhanAdapter(
     private val onClick: (Tumbuhan) -> Unit
@@ -18,7 +20,19 @@ class TumbuhanAdapter(
         fun bind(tumbuhan: Tumbuhan) {
             binding.tvNama.text = tumbuhan.nama
             binding.tvDeskripsi.text = tumbuhan.deskripsi
-            binding.imgTumbuhan.setImageResource(tumbuhan.imageRes)
+
+            if (!tumbuhan.gambarUrl.isNullOrBlank()) {
+                Glide.with(binding.root.context)
+                    .load(tumbuhan.gambarUrl)
+                    .placeholder(R.drawable.img_padi)
+                    .error(R.drawable.img_padi)
+                    .into(binding.imgTumbuhan)
+            } else if (tumbuhan.imageRes != 0) {
+                binding.imgTumbuhan.setImageResource(tumbuhan.imageRes)
+            } else {
+                binding.imgTumbuhan.setImageResource(R.drawable.img_padi)
+            }
+
             binding.root.setOnClickListener { onClick(tumbuhan) }
         }
     }

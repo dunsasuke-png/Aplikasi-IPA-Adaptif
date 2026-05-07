@@ -3,8 +3,11 @@ package com.app.manfaattumbuhan.presentation.siswa.materi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.app.manfaattumbuhan.data.repository.TumbuhanRepositoryImpl
 import com.app.manfaattumbuhan.domain.model.Tumbuhan
 import com.app.manfaattumbuhan.domain.usecase.GetTumbuhanUseCase
+import kotlinx.coroutines.launch
 
 class MateriViewModel(private val getTumbuhanUseCase: GetTumbuhanUseCase) : ViewModel() {
 
@@ -14,8 +17,13 @@ class MateriViewModel(private val getTumbuhanUseCase: GetTumbuhanUseCase) : View
     private val _selectedTumbuhan = MutableLiveData<Tumbuhan?>()
     val selectedTumbuhan: LiveData<Tumbuhan?> = _selectedTumbuhan
 
+    private val repository = TumbuhanRepositoryImpl()
+
     fun loadTumbuhan() {
-        _tumbuhanList.value = getTumbuhanUseCase.getAll()
+        viewModelScope.launch {
+            val apiList = repository.getAllTumbuhanFromApi()
+            _tumbuhanList.value = apiList
+        }
     }
 
     fun selectTumbuhan(tumbuhan: Tumbuhan) {
