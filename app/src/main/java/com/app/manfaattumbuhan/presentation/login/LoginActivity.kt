@@ -20,10 +20,26 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        TokenManager.init(this)
+
+        if (TokenManager.isLoggedIn()) {
+            val role = TokenManager.getUserRole()
+            val intent = if (role == "GURU") {
+                Intent(this, GuruActivity::class.java)
+            } else {
+                Intent(this, SiswaActivity::class.java)
+            }
+            intent.putExtra("USER_NAME", TokenManager.getUserName())
+            intent.putExtra("USER_ID", TokenManager.getUserId())
+            startActivity(intent)
+            finish()
+            return
+        }
+
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        TokenManager.init(this)
         viewModel = ViewModelProvider(this)[LoginViewModel::class.java]
 
         setupRoleSelection()
