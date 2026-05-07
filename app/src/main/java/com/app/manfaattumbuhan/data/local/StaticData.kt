@@ -66,64 +66,7 @@ object StaticData {
         "Admin Guru" to "guru123"
     )
 
-    val tumbuhanList = listOf(
-        Tumbuhan(
-            id = 1,
-            nama = "Apa Itu Tumbuhan?",
-            deskripsi = "Mengenal tumbuhan dan bagian-bagiannya",
-            manfaat = "Tumbuhan adalah makhluk hidup.\n\nTumbuhan bisa hidup di darat dan di air.\n\nTumbuhan memiliki bagian-bagian, seperti: akar, batang, dan daun.\n\nTumbuhan biasanya berwarna hijau.\n\nNama-Nama Bagian Tumbuhan:\n• Akar — bagian yang ada di dalam tanah\n• Batang — bagian yang tegak\n• Daun — bagian yang berwarna hijau\n• Bunga — bagian yang berwarna-warni\n• Buah — bagian yang bisa dimakan",
-            imageRes = R.drawable.img_padi
-        ),
-        Tumbuhan(
-            id = 2,
-            nama = "Bahan Makanan",
-            deskripsi = "Tumbuhan sebagai bahan makanan",
-            manfaat = "Manfaat Tumbuhan untuk Manusia\n\n1. Sebagai Bahan Makanan\n\n• Padi → bijinya untuk dimasak jadi nasi\n• Pisang → buahnya untuk dimakan\n• Singkong → umbinya untuk direbus/digoreng\n• Jagung → bijinya bisa dibuat tepung",
-            imageRes = R.drawable.img_padi
-        ),
-        Tumbuhan(
-            id = 3,
-            nama = "Bahan Obat",
-            deskripsi = "Tumbuhan sebagai bahan obat",
-            manfaat = "2. Sebagai Bahan Obat\n\n• Jahe → untuk obat masuk angin\n• Kunyit → untuk obat luka\n• Lidah buaya → untuk obat luka bakar\n• Daun sirih → untuk obat sariawan",
-            imageRes = R.drawable.img_lidah_buaya
-        ),
-        Tumbuhan(
-            id = 4,
-            nama = "Bahan Bangunan",
-            deskripsi = "Tumbuhan sebagai bahan bangunan",
-            manfaat = "3. Sebagai Bahan Bangunan\n\n• Jati → kayunya untuk membuat rumah dan meja kursi\n• Bambu → batangnya untuk membuat pagar",
-            imageRes = R.drawable.img_jati
-        ),
-        Tumbuhan(
-            id = 5,
-            nama = "Bahan Sandang",
-            deskripsi = "Tumbuhan sebagai bahan sandang/pakaian",
-            manfaat = "4. Sebagai Bahan Sandang\n\n• Kapas → untuk dibuat menjadi benang dan kain\n• Pandan → daunnya untuk dianyam menjadi tas/tikar",
-            imageRes = R.drawable.img_kapas
-        ),
-        Tumbuhan(
-            id = 6,
-            nama = "Pewarna Alami",
-            deskripsi = "Tumbuhan sebagai pewarna alami",
-            manfaat = "5. Sebagai Pewarna Alami\n\n• Kunyit → menghasilkan warna kuning\n• Buah naga → menghasilkan warna merah\n• Wortel → menghasilkan warna oren",
-            imageRes = R.drawable.img_sayuran
-        ),
-        Tumbuhan(
-            id = 7,
-            nama = "Bahan Industri",
-            deskripsi = "Tumbuhan sebagai bahan industri",
-            manfaat = "6. Sebagai Bahan Industri\n\n• Kelapa sawit → dibuat menjadi minyak goreng\n• Pohon karet → getahnya dibuat menjadi ban mobil/motor",
-            imageRes = R.drawable.img_padi
-        ),
-        Tumbuhan(
-            id = 8,
-            nama = "Pohon Kelapa",
-            deskripsi = "Contoh khusus tumbuhan yang sangat bermanfaat",
-            manfaat = "Contoh Khusus: Pohon Kelapa\n\nMari kita pelajari satu contoh tumbuhan yang sangat bermanfaat: Pohon Kelapa\n\nBagian-bagian Pohon Kelapa:\n1. Buah Kelapa\n2. Batang Kelapa\n3. Daun Kelapa\n\nManfaat Buah Kelapa:\n• Air kelapa → diminum sebagai minuman segar\n• Daging kelapa → dibuat santan untuk masak\n• Tempurung kelapa → dibuat gelas, mangkuk, dan hiasan\n\nManfaat Batang Kelapa:\n• Kayu kelapa → dibuat meja, dan kursi\n\nManfaat Daun Kelapa:\n• Lidi → dibuat sapu\n• Daun muda → dibuat ketupat",
-            imageRes = R.drawable.img_padi
-        )
-    )
+    val tumbuhanList = listOf<Tumbuhan>()
 
     val soalList = mutableListOf(
         Soal(
