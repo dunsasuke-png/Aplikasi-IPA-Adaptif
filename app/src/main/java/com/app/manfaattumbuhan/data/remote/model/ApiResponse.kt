@@ -83,6 +83,7 @@ data class SoalApi(
     val deskripsi: String,
     val video_url: String?,
     val foto_url: String?,
+    val tingkat: String? = "pretest",
     val guru_id: String,
     val created_at: String?,
     val updated_at: String?
@@ -92,14 +93,16 @@ data class CreateSoalRequest(
     val judul: String,
     val deskripsi: String,
     val video_url: String? = null,
-    val foto_url: String? = null
+    val foto_url: String? = null,
+    val tingkat: String = "pretest"
 )
 
 data class UpdateSoalRequest(
     val judul: String? = null,
     val deskripsi: String? = null,
     val video_url: String? = null,
-    val foto_url: String? = null
+    val foto_url: String? = null,
+    val tingkat: String? = null
 )
 
 data class SoalListResponse(

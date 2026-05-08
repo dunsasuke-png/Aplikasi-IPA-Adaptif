@@ -26,12 +26,15 @@ class KelolaSoalViewModel : ViewModel() {
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
-    fun loadSoal() {
+    private var currentFilter: String? = null
+
+    fun loadSoal(tingkat: String? = currentFilter) {
+        currentFilter = tingkat
         _isLoading.value = true
         viewModelScope.launch {
             try {
                 val token = TokenManager.getToken()
-                val response = apiService.getSoalList(token)
+                val response = apiService.getSoalList(token, tingkat = tingkat)
                 if (response.isSuccessful && response.body()?.success == true) {
                     _soalList.postValue(response.body()!!.data!!.soal)
                 } else {
@@ -45,13 +48,13 @@ class KelolaSoalViewModel : ViewModel() {
         }
     }
 
-    fun addSoal(judul: String, deskripsi: String, fotoUrl: String? = null, videoUrl: String? = null) {
+    fun addSoal(judul: String, deskripsi: String, fotoUrl: String? = null, videoUrl: String? = null, tingkat: String = "pretest") {
         viewModelScope.launch {
             try {
                 val token = TokenManager.getToken()
                 val response = apiService.createSoal(
                     token,
-                    CreateSoalRequest(judul, deskripsi, videoUrl, fotoUrl)
+                    CreateSoalRequest(judul, deskripsi, videoUrl, fotoUrl, tingkat)
                 )
                 if (response.isSuccessful && response.body()?.success == true) {
                     loadSoal()
@@ -64,13 +67,13 @@ class KelolaSoalViewModel : ViewModel() {
         }
     }
 
-    fun updateSoal(id: String, judul: String, deskripsi: String, fotoUrl: String? = null, videoUrl: String? = null) {
+    fun updateSoal(id: String, judul: String, deskripsi: String, fotoUrl: String? = null, videoUrl: String? = null, tingkat: String? = null) {
         viewModelScope.launch {
             try {
                 val token = TokenManager.getToken()
                 val response = apiService.updateSoal(
                     token, id,
-                    UpdateSoalRequest(judul, deskripsi, videoUrl, fotoUrl)
+                    UpdateSoalRequest(judul, deskripsi, videoUrl, fotoUrl, tingkat)
                 )
                 if (response.isSuccessful && response.body()?.success == true) {
                     loadSoal()

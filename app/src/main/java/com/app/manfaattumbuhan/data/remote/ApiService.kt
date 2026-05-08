@@ -84,6 +84,7 @@ interface ApiService {
     suspend fun getSoalList(
         @Header("Authorization") token: String,
         @Query("search") search: String? = null,
+        @Query("tingkat") tingkat: String? = null,
         @Query("page") page: Int = 1,
         @Query("limit") limit: Int = 100
     ): Response<ApiResponse<SoalListResponse>>

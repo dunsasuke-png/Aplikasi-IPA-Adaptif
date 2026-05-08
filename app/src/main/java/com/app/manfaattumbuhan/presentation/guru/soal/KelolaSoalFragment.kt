@@ -60,6 +60,9 @@ class KelolaSoalFragment : Fragment() {
     private lateinit var pickFotoLauncher: ActivityResultLauncher<String>
     private lateinit var pickVideoLauncher: ActivityResultLauncher<Intent>
 
+    private val tingkatOptions = listOf("Pre-test", "Mudah", "Sedang", "Sulit")
+    private val tingkatValues = listOf("pretest", "mudah", "sedang", "sulit")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -90,8 +93,9 @@ class KelolaSoalFragment : Fragment() {
 
         setupRecyclerView()
         setupListeners()
+        setupFilterChips()
         observeData()
-        viewModel.loadSoal()
+        viewModel.loadSoal(null)
     }
 
     private fun setupRecyclerView() {
@@ -116,6 +120,20 @@ class KelolaSoalFragment : Fragment() {
 
         binding.btnBuatSoal.setOnClickListener {
             showCreateDialog()
+        }
+    }
+
+    private fun setupFilterChips() {
+        binding.chipGroupFilter.setOnCheckedStateChangeListener { _, checkedIds ->
+            if (checkedIds.isEmpty()) return@setOnCheckedStateChangeListener
+            val tingkat = when (checkedIds[0]) {
+                R.id.chipPretest -> "pretest"
+                R.id.chipMudah -> "mudah"
+                R.id.chipSedang -> "sedang"
+                R.id.chipSulit -> "sulit"
+                else -> null
+            }
+            viewModel.loadSoal(tingkat)
         }
     }
 
@@ -146,13 +164,23 @@ class KelolaSoalFragment : Fragment() {
         }
     }
 
-    private fun setupSpinner(spinner: Spinner, selectedIndex: Int = 0) {
+    private fun setupJawabanSpinner(spinner: Spinner, selectedIndex: Int = 0) {
         val options = listOf("A", "B", "C", "D")
         val spinnerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, options)
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = spinnerAdapter
         if (selectedIndex in options.indices) {
             spinner.setSelection(selectedIndex)
+        }
+    }
+
+    private fun setupTingkatSpinner(spinner: Spinner, selectedTingkat: String = "pretest") {
+        val spinnerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, tingkatOptions)
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = spinnerAdapter
+        val index = tingkatValues.indexOf(selectedTingkat)
+        if (index >= 0) {
+            spinner.setSelection(index)
         }
     }
 
@@ -275,6 +303,7 @@ class KelolaSoalFragment : Fragment() {
         val progressVideo = dialogView.findViewById<ProgressBar>(R.id.progressVideo)
         val tvVideoStatus = dialogView.findViewById<TextView>(R.id.tvVideoStatus)
         val btnLihatVideo = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnLihatVideo)
+        val spinnerTingkat = dialogView.findViewById<Spinner>(R.id.spinnerTingkat)
         val etPilihanA = dialogView.findViewById<EditText>(R.id.etPilihanA)
         val etPilihanB = dialogView.findViewById<EditText>(R.id.etPilihanB)
         val etPilihanC = dialogView.findViewById<EditText>(R.id.etPilihanC)
@@ -295,7 +324,8 @@ class KelolaSoalFragment : Fragment() {
             currentVideoPreviewUrl?.let { url -> showVideoPopup(url) }
         }
 
-        setupSpinner(spinnerJawaban)
+        setupTingkatSpinner(spinnerTingkat)
+        setupJawabanSpinner(spinnerJawaban)
 
         btnPilihFoto.setOnClickListener {
             pickFotoLauncher.launch("image/*")
@@ -317,6 +347,7 @@ class KelolaSoalFragment : Fragment() {
                 val pilihanC = etPilihanC.text.toString().trim()
                 val pilihanD = etPilihanD.text.toString().trim()
                 val jawabanBenar = spinnerJawaban.selectedItemPosition
+                val tingkat = tingkatValues[spinnerTingkat.selectedItemPosition]
 
                 val pilihan = listOf(pilihanA, pilihanB, pilihanC, pilihanD).filter { it.isNotBlank() }
                 if (pilihan.size < 2) {
@@ -325,7 +356,7 @@ class KelolaSoalFragment : Fragment() {
                 }
 
                 val deskripsi = buildDeskripsiJson(pilihan, jawabanBenar)
-                viewModel.addSoal(judul, deskripsi, uploadedFotoUrl, uploadedVideoUrl)
+                viewModel.addSoal(judul, deskripsi, uploadedFotoUrl, uploadedVideoUrl, tingkat)
             }
             .setNegativeButton("Batal", null)
             .show()
@@ -345,6 +376,7 @@ class KelolaSoalFragment : Fragment() {
         val progressVideo = dialogView.findViewById<ProgressBar>(R.id.progressVideo)
         val tvVideoStatus = dialogView.findViewById<TextView>(R.id.tvVideoStatus)
         val btnLihatVideoEdit = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnLihatVideo)
+        val spinnerTingkat = dialogView.findViewById<Spinner>(R.id.spinnerTingkat)
         val etPilihanA = dialogView.findViewById<EditText>(R.id.etPilihanA)
         val etPilihanB = dialogView.findViewById<EditText>(R.id.etPilihanB)
         val etPilihanC = dialogView.findViewById<EditText>(R.id.etPilihanC)
@@ -366,6 +398,7 @@ class KelolaSoalFragment : Fragment() {
         }
 
         etJudul.setText(soal.judul)
+        setupTingkatSpinner(spinnerTingkat, soal.tingkat ?: "pretest")
 
         if (!soal.foto_url.isNullOrBlank()) {
             imgPreviewFoto.visibility = View.VISIBLE
@@ -389,9 +422,9 @@ class KelolaSoalFragment : Fragment() {
             if (pilihan.size > 1) etPilihanB.setText(pilihan[1])
             if (pilihan.size > 2) etPilihanC.setText(pilihan[2])
             if (pilihan.size > 3) etPilihanD.setText(pilihan[3])
-            setupSpinner(spinnerJawaban, jawabanBenar)
+            setupJawabanSpinner(spinnerJawaban, jawabanBenar)
         } else {
-            setupSpinner(spinnerJawaban)
+            setupJawabanSpinner(spinnerJawaban)
         }
 
         btnPilihFoto.setOnClickListener {
@@ -414,6 +447,7 @@ class KelolaSoalFragment : Fragment() {
                 val pilihanC = etPilihanC.text.toString().trim()
                 val pilihanD = etPilihanD.text.toString().trim()
                 val jawabanBenar = spinnerJawaban.selectedItemPosition
+                val tingkat = tingkatValues[spinnerTingkat.selectedItemPosition]
 
                 val pilihan = listOf(pilihanA, pilihanB, pilihanC, pilihanD).filter { it.isNotBlank() }
                 if (pilihan.size < 2) {
@@ -422,7 +456,7 @@ class KelolaSoalFragment : Fragment() {
                 }
 
                 val deskripsi = buildDeskripsiJson(pilihan, jawabanBenar)
-                viewModel.updateSoal(soal.id, judul, deskripsi, uploadedFotoUrl, uploadedVideoUrl)
+                viewModel.updateSoal(soal.id, judul, deskripsi, uploadedFotoUrl, uploadedVideoUrl, tingkat)
             }
             .setNegativeButton("Batal", null)
             .show()

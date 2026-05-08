@@ -20,6 +20,13 @@ class SoalGuruAdapter(
             binding.tvJudul.text = soal.judul
             binding.tvDeskripsi.text = parsePilihanPreview(soal.deskripsi)
             binding.tvTerakhirDiubah.text = "Dibuat: ${soal.created_at?.take(10) ?: "-"}"
+            binding.tvTingkat.text = when (soal.tingkat) {
+                "pretest" -> "Pre-test"
+                "mudah" -> "Mudah"
+                "sedang" -> "Sedang"
+                "sulit" -> "Sulit"
+                else -> "Pre-test"
+            }
 
             binding.btnEdit.setOnClickListener { onEdit(soal) }
             binding.btnDelete.setOnClickListener { onDelete(soal) }
