@@ -60,21 +60,25 @@ class LatihanViewModel : ViewModel() {
         startTimeMillis = System.currentTimeMillis()
         totalTimeMillis = 0L
 
+        val apiTingkat = when (tingkat) {
+            "Pre-test" -> "pretest"
+            "Mudah" -> "mudah"
+            "Sedang" -> "sedang"
+            "Sulit" -> "sulit"
+            else -> "pretest"
+        }
+
         viewModelScope.launch {
             try {
                 val token = TokenManager.getToken()
-                val response = apiService.getSoalList(token, limit = 100)
+                val response = apiService.getSoalList(token, tingkat = apiTingkat, limit = 100)
                 if (response.isSuccessful && response.body()?.success == true) {
                     val soalApiList = response.body()!!.data!!.soal
                     val soalList = soalApiList.mapIndexedNotNull { index, soalApi ->
                         parseSoalFromApi(index, soalApi)
                     }
 
-                    val filtered = if (tingkat == "Pre-test") {
-                        soalList.shuffled().take(10)
-                    } else {
-                        soalList.shuffled().take(10)
-                    }
+                    val filtered = soalList.shuffled().take(10)
 
                     _soalList.postValue(filtered)
                     if (filtered.isNotEmpty()) {
@@ -82,7 +86,7 @@ class LatihanViewModel : ViewModel() {
                         _progress.postValue(((0 + 1) * 100) / filtered.size)
                         soalStartTimeMillis = System.currentTimeMillis()
                     } else {
-                        _loadError.postValue("Belum ada soal tersedia")
+                        _loadError.postValue("Belum ada soal untuk tingkat $tingkat")
                     }
                 } else {
                     _loadError.postValue(response.body()?.message ?: "Gagal memuat soal")
