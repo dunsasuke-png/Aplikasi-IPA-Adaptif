@@ -123,7 +123,14 @@ class LatihanFragment : Fragment() {
             }
 
             binding.radioGroup.setOnCheckedChangeListener { _, checkedId ->
-                viewModel.selectAnswer(checkedId)
+                if (checkedId >= 0) {
+                    viewModel.selectAnswer(checkedId)
+                }
+            }
+
+            val saved = viewModel.selectedAnswer.value
+            if (saved != null && saved >= 0 && saved < soal.pilihan.size) {
+                binding.radioGroup.check(saved)
             }
         }
 

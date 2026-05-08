@@ -158,7 +158,6 @@ class KelolaMateriFragment : Fragment() {
         val etNama = dialogView.findViewById<EditText>(R.id.etNamaMateri)
         val etDeskripsi = dialogView.findViewById<EditText>(R.id.etDeskripsiMateri)
         val etManfaat = dialogView.findViewById<EditText>(R.id.etManfaatMateri)
-        val etUrutan = dialogView.findViewById<EditText>(R.id.etUrutan)
         val imgPreview = dialogView.findViewById<ImageView>(R.id.imgPreviewFoto)
         val btnPilihGambar = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnPilihGambar)
         val progressGambar = dialogView.findViewById<ProgressBar>(R.id.progressGambar)
@@ -180,7 +179,8 @@ class KelolaMateriFragment : Fragment() {
                 val nama = etNama.text.toString().trim()
                 val deskripsi = etDeskripsi.text.toString().trim()
                 val manfaat = etManfaat.text.toString().trim()
-                val urutan = etUrutan.text.toString().trim().toIntOrNull() ?: 0
+                val currentList = viewModel.materiList.value ?: emptyList()
+                val urutan = (currentList.maxOfOrNull { it.urutan } ?: 0) + 1
 
                 if (nama.isBlank() || deskripsi.isBlank() || manfaat.isBlank()) {
                     Toast.makeText(requireContext(), "Judul, deskripsi, dan isi materi harus diisi", Toast.LENGTH_SHORT).show()
@@ -200,7 +200,6 @@ class KelolaMateriFragment : Fragment() {
         val etNama = dialogView.findViewById<EditText>(R.id.etNamaMateri)
         val etDeskripsi = dialogView.findViewById<EditText>(R.id.etDeskripsiMateri)
         val etManfaat = dialogView.findViewById<EditText>(R.id.etManfaatMateri)
-        val etUrutan = dialogView.findViewById<EditText>(R.id.etUrutan)
         val imgPreview = dialogView.findViewById<ImageView>(R.id.imgPreviewFoto)
         val btnPilihGambar = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnPilihGambar)
         val progressGambar = dialogView.findViewById<ProgressBar>(R.id.progressGambar)
@@ -214,7 +213,6 @@ class KelolaMateriFragment : Fragment() {
         etNama.setText(materi.nama)
         etDeskripsi.setText(materi.deskripsi)
         etManfaat.setText(materi.manfaat)
-        etUrutan.setText(materi.urutan.toString())
 
         if (!materi.gambar_url.isNullOrBlank()) {
             imgPreview.visibility = View.VISIBLE
@@ -235,14 +233,13 @@ class KelolaMateriFragment : Fragment() {
                 val nama = etNama.text.toString().trim()
                 val deskripsi = etDeskripsi.text.toString().trim()
                 val manfaat = etManfaat.text.toString().trim()
-                val urutan = etUrutan.text.toString().trim().toIntOrNull() ?: 0
 
                 if (nama.isBlank() || deskripsi.isBlank() || manfaat.isBlank()) {
                     Toast.makeText(requireContext(), "Judul, deskripsi, dan isi materi harus diisi", Toast.LENGTH_SHORT).show()
                     return@setPositiveButton
                 }
 
-                viewModel.updateMateri(materi.id, nama, deskripsi, manfaat, uploadedGambarUrl, urutan)
+                viewModel.updateMateri(materi.id, nama, deskripsi, manfaat, uploadedGambarUrl, materi.urutan)
             }
             .setNegativeButton("Batal", null)
             .show()
