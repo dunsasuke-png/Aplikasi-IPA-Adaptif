@@ -19,7 +19,7 @@ class MateriGuruAdapter(
         fun bind(materi: MateriApi) {
             binding.tvNamaMateri.text = materi.nama
             binding.tvDeskripsiMateri.text = materi.deskripsi
-            binding.tvUrutan.text = "#${materi.urutan}"
+            binding.tvUrutan.text = "Urutan: #${materi.urutan}"
             binding.btnEdit.setOnClickListener { onEdit(materi) }
             binding.btnHapus.setOnClickListener { onDelete(materi) }
         }

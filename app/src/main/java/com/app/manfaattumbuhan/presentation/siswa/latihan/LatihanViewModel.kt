@@ -44,6 +44,7 @@ class LatihanViewModel : ViewModel() {
     val loadError: LiveData<String?> = _loadError
 
     private var correctCount = 0
+    private val answersMap = mutableMapOf<Int, Int>()
 
     // Time tracking
     private var startTimeMillis: Long = 0L
@@ -52,6 +53,7 @@ class LatihanViewModel : ViewModel() {
 
     fun loadSoalByTingkat(tingkat: String) {
         correctCount = 0
+        answersMap.clear()
         _currentIndex.value = 0
         _isFinished.value = false
         _selectedAnswer.value = null
@@ -125,26 +127,30 @@ class LatihanViewModel : ViewModel() {
 
     fun selectAnswer(index: Int) {
         _selectedAnswer.value = index
+        val currentIdx = _currentIndex.value ?: 0
+        answersMap[currentIdx] = index
     }
 
     fun nextSoal() {
         val list = _soalList.value ?: return
         val current = _currentIndex.value ?: 0
-        val selected = _selectedAnswer.value
-
-        if (selected != null && selected == list[current].jawabanBenar) {
-            correctCount++
-        }
 
         if (current < list.size - 1) {
             val nextIdx = current + 1
             _currentIndex.value = nextIdx
             _currentSoal.value = list[nextIdx]
-            _selectedAnswer.value = null
+            _selectedAnswer.value = answersMap[nextIdx]
             soalStartTimeMillis = System.currentTimeMillis()
             updateProgress()
         } else {
             totalTimeMillis = System.currentTimeMillis() - startTimeMillis
+            correctCount = 0
+            for (i in list.indices) {
+                val ans = answersMap[i]
+                if (ans != null && ans == list[i].jawabanBenar) {
+                    correctCount++
+                }
+            }
             _score.value = (correctCount * 100) / list.size
             _isFinished.value = true
         }
@@ -156,7 +162,7 @@ class LatihanViewModel : ViewModel() {
             val prevIdx = current - 1
             _currentIndex.value = prevIdx
             _currentSoal.value = _soalList.value?.get(prevIdx)
-            _selectedAnswer.value = null
+            _selectedAnswer.value = answersMap[prevIdx]
             updateProgress()
         }
     }

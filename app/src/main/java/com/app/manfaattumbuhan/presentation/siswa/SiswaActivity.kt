@@ -26,7 +26,8 @@ class SiswaActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.latihanFragment,
-                R.id.pilihLevelFragment -> {
+                R.id.pilihLevelFragment,
+                R.id.riwayatNilaiFragment -> {
                     binding.bottomNavSiswa.visibility = View.GONE
                 }
                 else -> {
