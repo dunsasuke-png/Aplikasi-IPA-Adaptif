@@ -17,6 +17,8 @@ class KelolaSoalViewModel : ViewModel() {
 
     private val apiService = ApiConfig.createService<ApiService>()
 
+    private val _allSoalList = MutableLiveData<List<SoalApi>>()
+
     private val _soalList = MutableLiveData<List<SoalApi>>()
     val soalList: LiveData<List<SoalApi>> = _soalList
 
@@ -26,7 +28,20 @@ class KelolaSoalViewModel : ViewModel() {
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
+    private val _currentPage = MutableLiveData(1)
+    val currentPage: LiveData<Int> = _currentPage
+
+    private val _totalPages = MutableLiveData(1)
+    val totalPages: LiveData<Int> = _totalPages
+
+    private val _totalItems = MutableLiveData(0)
+    val totalItems: LiveData<Int> = _totalItems
+
     private var currentFilter: String? = null
+
+    companion object {
+        const val ITEMS_PER_PAGE = 5
+    }
 
     fun loadSoal(tingkat: String? = currentFilter) {
         currentFilter = tingkat
@@ -36,7 +51,12 @@ class KelolaSoalViewModel : ViewModel() {
                 val token = TokenManager.getToken()
                 val response = apiService.getSoalList(token, tingkat = tingkat)
                 if (response.isSuccessful && response.body()?.success == true) {
-                    _soalList.postValue(response.body()!!.data!!.soal)
+                    val allSoal = response.body()!!.data!!.soal
+                    _allSoalList.postValue(allSoal)
+                    _totalItems.postValue(allSoal.size)
+                    _totalPages.postValue(kotlin.math.max(1, kotlin.math.ceil(allSoal.size.toDouble() / ITEMS_PER_PAGE).toInt()))
+                    _currentPage.postValue(1)
+                    applyPage(allSoal, 1)
                 } else {
                     _error.postValue(response.body()?.message ?: "Gagal memuat soal")
                 }
@@ -46,6 +66,20 @@ class KelolaSoalViewModel : ViewModel() {
                 _isLoading.postValue(false)
             }
         }
+    }
+
+    private fun applyPage(allSoal: List<SoalApi>, page: Int) {
+        val fromIndex = (page - 1) * ITEMS_PER_PAGE
+        val toIndex = kotlin.math.min(fromIndex + ITEMS_PER_PAGE, allSoal.size)
+        _soalList.postValue(if (fromIndex < allSoal.size) allSoal.subList(fromIndex, toIndex) else emptyList())
+    }
+
+    fun goToPage(page: Int) {
+        val allSoal = _allSoalList.value ?: return
+        val total = _totalPages.value ?: 1
+        val safePage = page.coerceIn(1, total)
+        _currentPage.value = safePage
+        applyPage(allSoal, safePage)
     }
 
     fun addSoal(judul: String, deskripsi: String, fotoUrl: String? = null, videoUrl: String? = null, tingkat: String = "pretest") {
