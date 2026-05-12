@@ -16,6 +16,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -81,6 +82,7 @@ class KelolaMateriFragment : Fragment() {
 
         setupRecyclerView()
         setupListeners()
+        setupPagination()
         observeData()
         viewModel.loadMateri()
     }
@@ -121,11 +123,83 @@ class KelolaMateriFragment : Fragment() {
         }
     }
 
+    private fun setupPagination() {
+        binding.btnPrevPage.setOnClickListener {
+            val current = viewModel.currentPage.value ?: 1
+            if (current > 1) viewModel.goToPage(current - 1)
+        }
+
+        binding.btnNextPage.setOnClickListener {
+            val current = viewModel.currentPage.value ?: 1
+            val total = viewModel.totalPages.value ?: 1
+            if (current < total) viewModel.goToPage(current + 1)
+        }
+    }
+
+    private fun updatePageNumbers(currentPage: Int, totalPages: Int) {
+        binding.layoutPageNumbers.removeAllViews()
+        for (i in 1..totalPages) {
+            val btn = com.google.android.material.button.MaterialButton(
+                requireContext(),
+                null,
+                com.google.android.material.R.attr.materialButtonOutlinedStyle
+            ).apply {
+                text = i.toString()
+                textSize = 12f
+                minimumWidth = 0
+                minWidth = 0
+                setPadding(0, 0, 0, 0)
+                insetTop = 0
+                insetBottom = 0
+                val size = (36 * resources.displayMetrics.density).toInt()
+                layoutParams = android.widget.LinearLayout.LayoutParams(size, size).apply {
+                    marginStart = (4 * resources.displayMetrics.density).toInt()
+                    marginEnd = (4 * resources.displayMetrics.density).toInt()
+                }
+                cornerRadius = (18 * resources.displayMetrics.density).toInt()
+                if (i == currentPage) {
+                    setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.green_primary))
+                    setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                    strokeWidth = 0
+                } else {
+                    setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
+                    setTextColor(ContextCompat.getColor(requireContext(), R.color.green_dark))
+                    strokeColor = android.content.res.ColorStateList.valueOf(
+                        ContextCompat.getColor(requireContext(), R.color.gray_border)
+                    )
+                    strokeWidth = (1 * resources.displayMetrics.density).toInt()
+                }
+                setOnClickListener { viewModel.goToPage(i) }
+            }
+            binding.layoutPageNumbers.addView(btn)
+        }
+
+        binding.btnPrevPage.isEnabled = currentPage > 1
+        binding.btnNextPage.isEnabled = currentPage < totalPages
+        binding.btnPrevPage.alpha = if (currentPage > 1) 1f else 0.4f
+        binding.btnNextPage.alpha = if (currentPage < totalPages) 1f else 0.4f
+    }
+
     private fun observeData() {
         viewModel.materiList.observe(viewLifecycleOwner) { list ->
             adapter.submitList(list)
-            binding.tvMateriCount.text = "${list.size} materi"
             binding.tvEmptyState.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
+        }
+
+        viewModel.totalItems.observe(viewLifecycleOwner) { total ->
+            binding.tvMateriCount.text = "$total materi"
+        }
+
+        viewModel.totalPages.observe(viewLifecycleOwner) { totalPages ->
+            binding.layoutPagination.visibility = if (totalPages > 1) View.VISIBLE else View.GONE
+            updatePageNumbers(viewModel.currentPage.value ?: 1, totalPages)
+        }
+
+        viewModel.currentPage.observe(viewLifecycleOwner) { currentPage ->
+            val totalPages = viewModel.totalPages.value ?: 1
+            if (totalPages > 1) {
+                updatePageNumbers(currentPage, totalPages)
+            }
         }
 
         viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
