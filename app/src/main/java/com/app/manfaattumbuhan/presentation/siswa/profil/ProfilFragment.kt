@@ -77,7 +77,7 @@ class ProfilFragment : Fragment() {
         binding.tvSekolah.text = TokenManager.getUserNim()
 
         val fotoUrl = TokenManager.getSiswaFoto()
-        if (fotoUrl.isNotBlank()) {
+        if (fotoUrl.isNotBlank() && fotoUrl != "null" && fotoUrl.startsWith("http")) {
             Glide.with(this)
                 .load(fotoUrl)
                 .placeholder(R.drawable.avatar_siswa)

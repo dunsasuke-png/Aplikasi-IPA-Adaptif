@@ -48,12 +48,14 @@ class DashboardGuruFragment : Fragment() {
 
     private fun loadGuruPhoto() {
         val fotoUrl = TokenManager.getGuruFoto()
-        if (fotoUrl.isNotBlank()) {
+        if (fotoUrl.isNotBlank() && fotoUrl != "null" && fotoUrl.startsWith("http")) {
             Glide.with(this)
                 .load(fotoUrl)
                 .placeholder(R.drawable.avatar_guru)
                 .error(R.drawable.avatar_guru)
                 .into(binding.imgProfile)
+        } else {
+            binding.imgProfile.setImageResource(R.drawable.avatar_guru)
         }
     }
 
