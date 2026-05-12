@@ -75,7 +75,6 @@ class ProfilFragment : Fragment() {
         binding.tvNama.text = TokenManager.getUserName()
         binding.tvKelas.text = TokenManager.getUserKelas()
         binding.tvSekolah.text = TokenManager.getUserNim()
-        binding.tvStatusBadge.text = "SISWA AKTIF"
 
         val fotoUrl = TokenManager.getSiswaFoto()
         if (fotoUrl.isNotBlank()) {
