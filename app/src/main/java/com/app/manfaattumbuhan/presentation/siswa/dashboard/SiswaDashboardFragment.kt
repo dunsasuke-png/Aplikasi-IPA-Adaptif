@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.app.manfaattumbuhan.R
@@ -33,18 +35,63 @@ class SiswaDashboardFragment : Fragment() {
         val nama = TokenManager.getUserName()
         binding.tvGreeting.text = "Halo, ${nama.split(" ").firstOrNull() ?: nama}!"
 
-        binding.cardLatihanSoal.setOnClickListener {
-            val userId = TokenManager.getUserId()
-            if (TokenManager.isPretestDone(userId)) {
-                findNavController().navigate(R.id.action_dashboard_to_pilih_level)
+        val userId = TokenManager.getUserId()
+        val pretestDone = TokenManager.isPretestDone(userId)
+
+        updatePretestCard(pretestDone)
+        updateLatihanCard(pretestDone)
+
+        binding.cardPretest.setOnClickListener {
+            if (TokenManager.isPretestDone(TokenManager.getUserId())) {
+                Toast.makeText(requireContext(), "Pre-test sudah selesai", Toast.LENGTH_SHORT).show()
             } else {
                 val bundle = Bundle().apply { putString("tingkat", "Pre-test") }
                 findNavController().navigate(R.id.action_dashboard_to_latihan, bundle)
             }
         }
 
+        binding.cardLatihanSoal.setOnClickListener {
+            if (!TokenManager.isPretestDone(TokenManager.getUserId())) {
+                Toast.makeText(requireContext(), "Selesaikan pre-test terlebih dahulu", Toast.LENGTH_SHORT).show()
+            } else {
+                findNavController().navigate(R.id.action_dashboard_to_pilih_level)
+            }
+        }
+
         binding.cardRiwayatNilai.setOnClickListener {
             findNavController().navigate(R.id.action_dashboard_to_riwayat)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val userId = TokenManager.getUserId()
+        val pretestDone = TokenManager.isPretestDone(userId)
+        updatePretestCard(pretestDone)
+        updateLatihanCard(pretestDone)
+    }
+
+    private fun updatePretestCard(pretestDone: Boolean) {
+        if (pretestDone) {
+            binding.cardPretest.alpha = 0.5f
+            binding.tvPretestDesc.text = "Pre-test sudah selesai."
+        } else {
+            binding.cardPretest.alpha = 1f
+            binding.tvPretestDesc.text = "Kerjakan pre-test untuk menentukan level kamu."
+        }
+    }
+
+    private fun updateLatihanCard(pretestDone: Boolean) {
+        if (pretestDone) {
+            binding.cardLatihanSoal.alpha = 1f
+            binding.tvLatihanDesc.text = "Uji pemahamanmu dengan kuis interaktif."
+            binding.imgLatihanIcon.setImageResource(R.drawable.ic_arrow_right)
+            binding.imgLatihanIcon.imageTintList = ContextCompat.getColorStateList(requireContext(), R.color.green_primary)
+        } else {
+            binding.cardLatihanSoal.alpha = 0.5f
+            binding.tvLatihanDesc.text = "Selesaikan pre-test terlebih dahulu."
+            binding.imgLatihanIcon.setImageResource(R.drawable.ic_lock)
+            binding.imgLatihanIcon.imageTintList = ContextCompat.getColorStateList(requireContext(), R.color.gray_text)
         }
     }
 
