@@ -122,8 +122,14 @@ class ProfilGuruFragment : Fragment() {
         binding.tvMapelValue.text = TokenManager.getGuruMapel().ifBlank { "-" }
 
         val fotoUrl = TokenManager.getGuruFoto()
-        if (fotoUrl.isNotBlank()) {
-            Glide.with(this).load(fotoUrl).placeholder(R.drawable.avatar_guru).into(binding.imgAvatarGuru)
+        if (fotoUrl.isNotBlank() && fotoUrl != "null" && fotoUrl.startsWith("http")) {
+            Glide.with(this)
+                .load(fotoUrl)
+                .placeholder(R.drawable.avatar_guru)
+                .error(R.drawable.avatar_guru)
+                .into(binding.imgAvatarGuru)
+        } else {
+            binding.imgAvatarGuru.setImageResource(R.drawable.avatar_guru)
         }
     }
 
