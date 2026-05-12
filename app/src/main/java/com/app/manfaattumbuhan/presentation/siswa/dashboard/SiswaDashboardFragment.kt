@@ -63,7 +63,7 @@ class SiswaDashboardFragment : Fragment() {
             findNavController().navigate(R.id.action_dashboard_to_riwayat)
         }
 
-        binding.cardPetunjuk.setOnClickListener {
+        binding.btnPetunjuk.setOnClickListener {
             showPetunjukDialog()
         }
     }
