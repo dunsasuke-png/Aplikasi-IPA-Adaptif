@@ -2,6 +2,8 @@ package com.app.manfaattumbuhan.presentation.siswa.latihan
 
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,6 +40,22 @@ class LatihanFragment : Fragment() {
     private val apiService = ApiConfig.createService<ApiService>()
     private var exoPlayer: ExoPlayer? = null
 
+    private val timerHandler = Handler(Looper.getMainLooper())
+    private var timerStartMillis: Long = 0L
+    private var isTimerRunning = false
+    private val timerRunnable = object : Runnable {
+        override fun run() {
+            if (isTimerRunning && _binding != null) {
+                val elapsed = System.currentTimeMillis() - timerStartMillis
+                val seconds = (elapsed / 1000).toInt()
+                val minutes = seconds / 60
+                val secs = seconds % 60
+                binding.tvTimer.text = String.format("%02d:%02d", minutes, secs)
+                timerHandler.postDelayed(this, 1000)
+            }
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -55,17 +73,23 @@ class LatihanFragment : Fragment() {
             findNavController().navigate(R.id.action_latihan_to_pilihLevel)
             return
         }
+
+        binding.tvStartTingkat.text = "Tingkat: $tingkat"
+        binding.layoutStartOverlay.visibility = View.VISIBLE
+        binding.layoutQuizContent.visibility = View.GONE
+
+        binding.btnMulai.setOnClickListener {
+            binding.layoutStartOverlay.visibility = View.GONE
+            binding.layoutQuizContent.visibility = View.VISIBLE
+            startQuiz()
+        }
+    }
+
+    private fun startQuiz() {
         viewModel.loadSoalByTingkat(tingkat)
 
-        // Set tingkat label
         binding.tvTingkatLabel.text = tingkat
-        binding.tvMotivasi.text = when (tingkat) {
-            "Pre-test" -> "Sedikit lagi!"
-            "Mudah" -> "Level Mudah"
-            "Sedang" -> "Level Sedang"
-            "Sulit" -> "Level Sulit"
-            else -> "Ayo semangat!"
-        }
+        binding.tvTimer.text = "00:00"
 
         viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
             binding.btnSelanjutnya.isEnabled = !loading
@@ -85,6 +109,10 @@ class LatihanFragment : Fragment() {
         }
 
         viewModel.currentSoal.observe(viewLifecycleOwner) { soal ->
+            if (!isTimerRunning) {
+                startTimer()
+            }
+
             if (soal.pertanyaan.isNotBlank()) {
                 binding.tvPertanyaan.visibility = View.VISIBLE
                 binding.tvPertanyaan.text = soal.pertanyaan
@@ -142,7 +170,6 @@ class LatihanFragment : Fragment() {
         viewModel.currentIndex.observe(viewLifecycleOwner) { index ->
             val total = viewModel.getTotalSoal()
             binding.tvSoalCounter.text = "Soal ${index + 1} dari $total"
-            binding.tvMotivasi.text = if (index < total / 2) "Ayo semangat!" else "Sedikit lagi!"
         }
 
         viewModel.progress.observe(viewLifecycleOwner) { progress ->
@@ -152,6 +179,7 @@ class LatihanFragment : Fragment() {
 
         viewModel.isFinished.observe(viewLifecycleOwner) { finished ->
             if (finished) {
+                stopTimer()
                 val score = viewModel.score.value ?: 0
                 saveNilai(score)
                 showResultDialog(score)
@@ -165,17 +193,17 @@ class LatihanFragment : Fragment() {
         binding.btnSelanjutnya.setOnClickListener {
             viewModel.nextSoal()
         }
+    }
 
-        binding.btnClose.setOnClickListener {
-            MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Keluar Latihan")
-                .setMessage("Apakah kamu yakin ingin keluar? Progres latihan akan hilang.")
-                .setPositiveButton("Ya, Keluar") { _, _ ->
-                    findNavController().navigateUp()
-                }
-                .setNegativeButton("Batal", null)
-                .show()
-        }
+    private fun startTimer() {
+        timerStartMillis = System.currentTimeMillis()
+        isTimerRunning = true
+        timerHandler.post(timerRunnable)
+    }
+
+    private fun stopTimer() {
+        isTimerRunning = false
+        timerHandler.removeCallbacks(timerRunnable)
     }
 
     private fun saveNilai(score: Int) {
@@ -222,7 +250,7 @@ class LatihanFragment : Fragment() {
         val ketepatan = viewModel.getKetepatanPersen()
         val kecepatanDetik = viewModel.getAverageTimePerSoal()
         val tingkatSebelumnya = if (tingkat == "Pre-test") {
-            0.0 // Pre-test: default Mudah = 0
+            0.0
         } else {
             StaticData.getFuzzyOutputValue(userIdInt)
         }
@@ -306,6 +334,7 @@ class LatihanFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        stopTimer()
         releasePlayer()
         super.onDestroyView()
         _binding = null

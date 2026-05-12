@@ -1,196 +1,278 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    android:orientation="vertical">
+    android:background="@color/white">
 
-    <!-- Top Bar -->
+    <!-- Main Quiz Content -->
     <LinearLayout
+        android:id="@+id/layoutQuizContent"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="16dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone">
 
-        <ImageView
-            android:id="@+id/btnClose"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:padding="4dp"
-            android:src="@drawable/ic_close"
-            app:tint="@color/gray_text" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:background="@drawable/bg_badge_green"
-            android:paddingHorizontal="12dp"
-            android:paddingVertical="4dp">
-
-            <TextView
-                android:id="@+id/tvTingkatLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Pre-test"
-                android:textColor="@color/green_primary"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-        <TextView
-            android:id="@+id/tvMotivasi"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Ayo semangat!"
-            android:textColor="@color/green_primary"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <!-- Progress -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingHorizontal="16dp">
-
-        <TextView
-            android:id="@+id/tvSoalCounter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Soal 1 dari 10"
-            android:textColor="@color/gray_text"
-            android:textSize="14sp" />
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-        <TextView
-            android:id="@+id/tvProgress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="10%"
-            android:textColor="@color/green_primary"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="8dp"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="8dp"
-        android:max="100"
-        android:progress="10"
-        android:progressDrawable="@drawable/progress_bar_green" />
-
-    <!-- Question Content -->
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-
+        <!-- Top Bar -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="16dp">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Perhatikan soal berikut."
-                android:textColor="@color/gray_text"
-                android:textSize="14sp" />
+                android:background="@drawable/bg_badge_green"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="4dp">
 
-            <ImageView
-                android:id="@+id/imgSoal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/bg_rounded_gray"
-                android:padding="8dp"
-                android:scaleType="fitCenter"
-                android:visibility="gone" />
-
-            <FrameLayout
-                android:id="@+id/videoContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/bg_rounded_gray"
-                android:visibility="gone">
-
-                <androidx.media3.ui.PlayerView
-                    android:id="@+id/videoPlayerInline"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/tvTingkatLabel"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:minHeight="200dp"
-                    app:resize_mode="fit"
-                    app:show_buffering="when_playing"
-                    app:use_controller="true" />
-            </FrameLayout>
+                    android:text="Pre-test"
+                    android:textColor="@color/green_primary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
 
             <TextView
-                android:id="@+id/tvPertanyaan"
+                android:id="@+id/tvTimer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Pertanyaan soal"
+                android:text="00:00"
                 android:textColor="@color/green_dark"
                 android:textSize="16sp"
                 android:textStyle="bold" />
+        </LinearLayout>
 
-            <RadioGroup
-                android:id="@+id/radioGroup"
+        <!-- Progress -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp">
+
+            <TextView
+                android:id="@+id/tvSoalCounter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Soal 1 dari 10"
+                android:textColor="@color/gray_text"
+                android:textSize="14sp" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/tvProgress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="10%"
+                android:textColor="@color/green_primary"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="8dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="8dp"
+            android:max="100"
+            android:progress="10"
+            android:progressDrawable="@drawable/progress_bar_green" />
+
+        <!-- Question Content -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp" />
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Perhatikan soal berikut."
+                    android:textColor="@color/gray_text"
+                    android:textSize="14sp" />
+
+                <ImageView
+                    android:id="@+id/imgSoal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_rounded_gray"
+                    android:padding="8dp"
+                    android:scaleType="fitCenter"
+                    android:visibility="gone" />
+
+                <FrameLayout
+                    android:id="@+id/videoContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_rounded_gray"
+                    android:visibility="gone">
+
+                    <androidx.media3.ui.PlayerView
+                        android:id="@+id/videoPlayerInline"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="200dp"
+                        app:resize_mode="fit"
+                        app:show_buffering="when_playing"
+                        app:use_controller="true" />
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/tvPertanyaan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Pertanyaan soal"
+                    android:textColor="@color/green_dark"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <RadioGroup
+                    android:id="@+id/radioGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp" />
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- Bottom Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnKembali"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:text="← Kembali"
+                android:textColor="@color/green_primary"
+                app:cornerRadius="12dp"
+                app:strokeColor="@color/green_primary" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSelanjutnya"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:text="Selanjutnya →"
+                app:backgroundTint="@color/green_primary"
+                app:cornerRadius="12dp" />
         </LinearLayout>
-    </ScrollView>
-
-    <!-- Bottom Buttons -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="16dp">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnKembali"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_marginEnd="8dp"
-            android:layout_weight="1"
-            android:text="← Kembali"
-            android:textColor="@color/green_primary"
-            app:cornerRadius="12dp"
-            app:strokeColor="@color/green_primary" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSelanjutnya"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="8dp"
-            android:layout_weight="1"
-            android:text="Selanjutnya →"
-            app:backgroundTint="@color/green_primary"
-            app:cornerRadius="12dp" />
     </LinearLayout>
-</LinearLayout>
+
+    <!-- Start Overlay -->
+    <LinearLayout
+        android:id="@+id/layoutStartOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="32dp">
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/ic_quiz"
+            app:tint="@color/green_primary" />
+
+        <TextView
+            android:id="@+id/tvStartTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Siap Mengerjakan?"
+            android:textColor="@color/green_dark"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvStartDesc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center"
+            android:text="Waktu akan mulai berjalan setelah kamu menekan tombol Mulai."
+            android:textColor="@color/gray_text"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:id="@+id/layoutStartInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/bg_rounded_gray"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tvStartTingkat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tingkat: Pre-test"
+                android:textColor="@color/green_dark"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Maksimal 10 soal pilihan ganda"
+                android:textColor="@color/gray_text"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Waktu dicatat untuk analisis kemampuanmu"
+                android:textColor="@color/gray_text"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMulai"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="32dp"
+            android:text="Mulai"
+            android:textSize="18sp"
+            app:backgroundTint="@color/green_primary"
+            app:cornerRadius="16dp" />
+    </LinearLayout>
+
+</FrameLayout>
