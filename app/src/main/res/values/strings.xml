@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Manfaat Tumbuhan</string>
+    <string name="login_title">Manfaat Tumbuhan</string>
+    <string name="login_subtitle">Pilih dara masukkmu untuk mulai belajar</string>
+    <string name="siswa">Siswa</string>
+    <string name="guru">Guru</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="masuk">Masuk</string>
+    <string name="beranda">Beranda</string>
+    <string name="materi">Materi</string>
+    <string name="profil">Profil</string>
+    <string name="soal">Soal</string>
+    <string name="akun">Akun</string>
+    <string name="laporan">Laporan</string>
+</resources>
