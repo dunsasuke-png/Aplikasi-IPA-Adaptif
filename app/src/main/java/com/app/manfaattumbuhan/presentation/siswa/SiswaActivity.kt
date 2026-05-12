@@ -27,7 +27,8 @@ class SiswaActivity : AppCompatActivity() {
             when (destination.id) {
                 R.id.latihanFragment,
                 R.id.pilihLevelFragment,
-                R.id.riwayatNilaiFragment -> {
+                R.id.riwayatNilaiFragment,
+                R.id.detailMateriFragment -> {
                     binding.bottomNavSiswa.visibility = View.GONE
                 }
                 else -> {

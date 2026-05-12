@@ -74,7 +74,7 @@ class ProfilFragment : Fragment() {
     private fun loadProfilData() {
         binding.tvNama.text = TokenManager.getUserName()
         binding.tvKelas.text = TokenManager.getUserKelas()
-        binding.tvSekolah.text = "NISN: ${TokenManager.getUserNim()}"
+        binding.tvSekolah.text = TokenManager.getUserNim()
         binding.tvStatusBadge.text = "SISWA AKTIF"
 
         val fotoUrl = TokenManager.getSiswaFoto()
