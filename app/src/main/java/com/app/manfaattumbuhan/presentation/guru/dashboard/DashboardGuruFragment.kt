@@ -30,6 +30,9 @@ class DashboardGuruFragment : Fragment() {
         TokenManager.init(requireContext())
         loadGuruPhoto()
 
+        val nama = TokenManager.getUserName()
+        binding.tvGreetingGuru.text = "Halo, ${nama.split(" ").firstOrNull() ?: nama}!"
+
         binding.imgProfile.setOnClickListener {
             findNavController().navigate(R.id.action_dashboard_to_profil)
         }

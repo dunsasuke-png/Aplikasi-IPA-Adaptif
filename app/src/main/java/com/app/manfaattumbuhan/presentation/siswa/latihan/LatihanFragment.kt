@@ -169,7 +169,14 @@ class LatihanFragment : Fragment() {
 
         viewModel.currentIndex.observe(viewLifecycleOwner) { index ->
             val total = viewModel.getTotalSoal()
-            binding.tvSoalCounter.text = "Soal ${index + 1} dari $total"
+            if (total > 0) {
+                binding.tvSoalCounter.text = "Soal ${index + 1} dari $total"
+            }
+        }
+
+        viewModel.soalList.observe(viewLifecycleOwner) { list ->
+            val index = viewModel.currentIndex.value ?: 0
+            binding.tvSoalCounter.text = "Soal ${index + 1} dari ${list.size}"
         }
 
         viewModel.progress.observe(viewLifecycleOwner) { progress ->
