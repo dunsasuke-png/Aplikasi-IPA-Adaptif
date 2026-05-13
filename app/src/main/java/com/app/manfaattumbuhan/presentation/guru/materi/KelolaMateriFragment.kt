@@ -89,8 +89,8 @@ class KelolaMateriFragment : Fragment() {
 
     private fun setupRecyclerView() {
         adapter = MateriGuruAdapter(
-            onEdit = { materi -> showEditDialog(materi) },
-            onDelete = { materi -> showDeleteConfirmation(materi) }
+            onEdit = { materi, displayNumber -> showEditDialog(materi, displayNumber) },
+            onDelete = { materi, displayNumber -> showDeleteConfirmation(materi, displayNumber) }
         )
         binding.rvMateri.layoutManager = LinearLayoutManager(requireContext())
         binding.rvMateri.adapter = adapter
@@ -182,6 +182,8 @@ class KelolaMateriFragment : Fragment() {
 
     private fun observeData() {
         viewModel.materiList.observe(viewLifecycleOwner) { list ->
+            val currentPage = viewModel.currentPage.value ?: 1
+            adapter.pageOffset = (currentPage - 1) * KelolaMateriViewModel.ITEMS_PER_PAGE
             adapter.submitList(list)
             binding.tvEmptyState.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
         }
@@ -196,6 +198,7 @@ class KelolaMateriFragment : Fragment() {
         }
 
         viewModel.currentPage.observe(viewLifecycleOwner) { currentPage ->
+            adapter.pageOffset = (currentPage - 1) * KelolaMateriViewModel.ITEMS_PER_PAGE
             val totalPages = viewModel.totalPages.value ?: 1
             if (totalPages > 1) {
                 updatePageNumbers(currentPage, totalPages)
@@ -329,7 +332,7 @@ class KelolaMateriFragment : Fragment() {
             .show()
     }
 
-    private fun showEditDialog(materi: MateriApi) {
+    private fun showEditDialog(materi: MateriApi, displayNumber: Int = 0) {
         uploadedGambarUrl = materi.gambar_url
         uploadedVideoUrl = materi.video_url
 
@@ -383,18 +386,18 @@ class KelolaMateriFragment : Fragment() {
                     return@setPositiveButton
                 }
 
-                viewModel.updateMateri(materi.id, nama, deskripsi, manfaat, uploadedGambarUrl, uploadedVideoUrl, materi.urutan)
+                viewModel.updateMateri(materi.id, nama, deskripsi, manfaat, uploadedGambarUrl, uploadedVideoUrl, materi.urutan, displayNumber)
             }
             .setNegativeButton("Batal", null)
             .show()
     }
 
-    private fun showDeleteConfirmation(materi: MateriApi) {
+    private fun showDeleteConfirmation(materi: MateriApi, displayNumber: Int = 0) {
         AlertDialog.Builder(requireContext())
             .setTitle("Hapus Materi")
-            .setMessage("Yakin ingin menghapus materi No. ${materi.urutan}?")
+            .setMessage("Yakin ingin menghapus materi No. $displayNumber?")
             .setPositiveButton("Hapus") { _, _ ->
-                viewModel.deleteMateri(materi.id, materi.urutan)
+                viewModel.deleteMateri(materi.id, displayNumber)
             }
             .setNegativeButton("Batal", null)
             .show()
