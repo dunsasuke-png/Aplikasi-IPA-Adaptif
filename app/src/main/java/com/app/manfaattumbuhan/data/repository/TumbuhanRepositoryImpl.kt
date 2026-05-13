@@ -25,7 +25,7 @@ class TumbuhanRepositoryImpl : TumbuhanRepository {
             val response = apiService.getMateriList(token)
             if (response.isSuccessful && response.body()?.success == true) {
                 val materiList = response.body()?.data?.materi ?: emptyList()
-                materiList.mapIndexed { index, materi ->
+                materiList.sortedBy { it.urutan }.mapIndexed { index, materi ->
                     Tumbuhan(
                         id = index + 1,
                         nama = materi.nama,
@@ -34,7 +34,8 @@ class TumbuhanRepositoryImpl : TumbuhanRepository {
                         imageRes = 0,
                         gambarUrl = materi.gambar_url,
                         videoUrl = materi.video_url,
-                        apiId = materi.id
+                        apiId = materi.id,
+                        urutan = materi.urutan
                     )
                 }
             } else {

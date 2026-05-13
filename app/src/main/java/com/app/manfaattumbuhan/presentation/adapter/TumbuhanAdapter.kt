@@ -1,6 +1,7 @@
 package com.app.manfaattumbuhan.presentation.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -14,10 +15,12 @@ class TumbuhanAdapter(
     private val onClick: (Tumbuhan) -> Unit
 ) : ListAdapter<Tumbuhan, TumbuhanAdapter.ViewHolder>(DiffCallback()) {
 
+    var lockedIndices: Set<Int> = emptySet()
+
     inner class ViewHolder(private val binding: ItemTumbuhanBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(tumbuhan: Tumbuhan) {
+        fun bind(tumbuhan: Tumbuhan, isLocked: Boolean) {
             binding.tvNama.text = tumbuhan.nama
             binding.tvDeskripsi.text = tumbuhan.deskripsi
 
@@ -33,7 +36,15 @@ class TumbuhanAdapter(
                 binding.imgTumbuhan.setImageResource(R.drawable.img_padi)
             }
 
-            binding.root.setOnClickListener { onClick(tumbuhan) }
+            if (isLocked) {
+                binding.lockOverlay.visibility = View.VISIBLE
+                binding.root.alpha = 0.6f
+                binding.root.setOnClickListener(null)
+            } else {
+                binding.lockOverlay.visibility = View.GONE
+                binding.root.alpha = 1f
+                binding.root.setOnClickListener { onClick(tumbuhan) }
+            }
         }
     }
 
@@ -45,7 +56,7 @@ class TumbuhanAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), lockedIndices.contains(position))
     }
 
     class DiffCallback : DiffUtil.ItemCallback<Tumbuhan>() {
