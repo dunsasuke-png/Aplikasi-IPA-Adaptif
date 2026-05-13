@@ -99,7 +99,7 @@ class KelolaMateriViewModel : ViewModel() {
         }
     }
 
-    fun updateMateri(id: String, nama: String, deskripsi: String, manfaat: String, gambarUrl: String?, videoUrl: String?, urutan: Int) {
+    fun updateMateri(id: String, nama: String, deskripsi: String, manfaat: String, gambarUrl: String?, videoUrl: String?, urutan: Int, displayNumber: Int = 0) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
@@ -107,7 +107,7 @@ class KelolaMateriViewModel : ViewModel() {
                 val request = UpdateMateriRequest(nama, deskripsi, manfaat, gambarUrl, videoUrl, urutan)
                 val response = apiService.updateMateri(token, id, request)
                 if (response.isSuccessful && response.body()?.success == true) {
-                    _message.value = "Materi No. $urutan berhasil diperbarui"
+                    _message.value = "Materi No. $displayNumber berhasil diperbarui"
                     loadMateri()
                 } else {
                     _message.value = "Gagal memperbarui materi"
@@ -120,14 +120,14 @@ class KelolaMateriViewModel : ViewModel() {
         }
     }
 
-    fun deleteMateri(id: String, urutan: Int = 0) {
+    fun deleteMateri(id: String, displayNumber: Int = 0) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
                 val token = TokenManager.getToken()
                 val response = apiService.deleteMateri(token, id)
                 if (response.isSuccessful && response.body()?.success == true) {
-                    _message.value = "Materi No. $urutan berhasil dihapus"
+                    _message.value = "Materi No. $displayNumber berhasil dihapus"
                     loadMateri()
                 } else {
                     _message.value = "Gagal menghapus materi"
