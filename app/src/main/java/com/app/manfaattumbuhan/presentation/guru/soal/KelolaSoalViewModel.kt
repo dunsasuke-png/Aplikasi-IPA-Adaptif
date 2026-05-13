@@ -94,7 +94,7 @@ class KelolaSoalViewModel : ViewModel() {
                     CreateSoalRequest(judul, deskripsi, videoUrl, fotoUrl, tingkat)
                 )
                 if (response.isSuccessful && response.body()?.success == true) {
-                    _message.postValue("Soal \"$judul\" berhasil ditambahkan")
+                    _message.postValue("Soal berhasil ditambahkan")
                     loadSoal()
                 } else {
                     _error.postValue(response.body()?.message ?: "Gagal membuat soal")
@@ -105,7 +105,7 @@ class KelolaSoalViewModel : ViewModel() {
         }
     }
 
-    fun updateSoal(id: String, judul: String, deskripsi: String, fotoUrl: String? = null, videoUrl: String? = null, tingkat: String? = null) {
+    fun updateSoal(id: String, judul: String, deskripsi: String, fotoUrl: String? = null, videoUrl: String? = null, tingkat: String? = null, displayNumber: Int = 0) {
         viewModelScope.launch {
             try {
                 val token = TokenManager.getToken()
@@ -114,7 +114,7 @@ class KelolaSoalViewModel : ViewModel() {
                     UpdateSoalRequest(judul, deskripsi, videoUrl, fotoUrl, tingkat)
                 )
                 if (response.isSuccessful && response.body()?.success == true) {
-                    _message.postValue("Soal \"$judul\" berhasil diperbarui")
+                    _message.postValue("Soal No. $displayNumber berhasil diperbarui")
                     loadSoal()
                 } else {
                     _error.postValue(response.body()?.message ?: "Gagal memperbarui soal")
@@ -125,13 +125,13 @@ class KelolaSoalViewModel : ViewModel() {
         }
     }
 
-    fun deleteSoal(id: String, judul: String = "") {
+    fun deleteSoal(id: String, displayNumber: Int = 0) {
         viewModelScope.launch {
             try {
                 val token = TokenManager.getToken()
                 val response = apiService.deleteSoal(token, id)
                 if (response.isSuccessful) {
-                    _message.postValue("Soal \"$judul\" berhasil dihapus")
+                    _message.postValue("Soal No. $displayNumber berhasil dihapus")
                     loadSoal()
                 } else {
                     _error.postValue("Gagal menghapus soal")

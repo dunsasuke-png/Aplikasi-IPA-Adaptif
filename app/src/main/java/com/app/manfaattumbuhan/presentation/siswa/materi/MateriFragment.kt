@@ -88,7 +88,9 @@ class MateriFragment : Fragment() {
 
         val locked = mutableSetOf<Int>()
         for (i in 0 until totalMateri) {
-            if (i >= maxUnlocked) locked.add(i)
+            val materiIndex = i + 1
+            val alreadyStudied = TokenManager.isMateriStudied(userId, materiIndex)
+            if (i >= maxUnlocked && !alreadyStudied) locked.add(i)
         }
         return locked
     }
