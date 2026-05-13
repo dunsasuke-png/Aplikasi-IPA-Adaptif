@@ -105,8 +105,8 @@ class KelolaSoalFragment : Fragment() {
 
     private fun setupRecyclerView() {
         adapter = SoalGuruAdapter(
-            onEdit = { soal -> showEditDialog(soal) },
-            onDelete = { soal -> showDeleteConfirmation(soal) }
+            onEdit = { soal, displayNumber -> showEditDialog(soal, displayNumber) },
+            onDelete = { soal, displayNumber -> showDeleteConfirmation(soal, displayNumber) }
         )
         binding.rvSoal.layoutManager = LinearLayoutManager(requireContext())
         binding.rvSoal.adapter = adapter
@@ -467,7 +467,7 @@ class KelolaSoalFragment : Fragment() {
             .show()
     }
 
-    private fun showEditDialog(soal: SoalApi) {
+    private fun showEditDialog(soal: SoalApi, displayNumber: Int = 0) {
         uploadedFotoUrl = soal.foto_url
         uploadedVideoUrl = soal.video_url
 
@@ -566,17 +566,17 @@ class KelolaSoalFragment : Fragment() {
                 }
 
                 val deskripsi = buildDeskripsiJson(pilihan, jawabanBenar)
-                viewModel.updateSoal(soal.id, judul, deskripsi, uploadedFotoUrl, uploadedVideoUrl, tingkat)
+                viewModel.updateSoal(soal.id, judul, deskripsi, uploadedFotoUrl, uploadedVideoUrl, tingkat, displayNumber)
             }
             .setNegativeButton("Batal", null)
             .show()
     }
 
-    private fun showDeleteConfirmation(soal: SoalApi) {
+    private fun showDeleteConfirmation(soal: SoalApi, displayNumber: Int = 0) {
         AlertDialog.Builder(requireContext())
             .setTitle("Hapus Soal")
-            .setMessage("Yakin ingin menghapus soal \"${soal.judul}\"?")
-            .setPositiveButton("Hapus") { _, _ -> viewModel.deleteSoal(soal.id, soal.judul) }
+            .setMessage("Yakin ingin menghapus soal No. $displayNumber?")
+            .setPositiveButton("Hapus") { _, _ -> viewModel.deleteSoal(soal.id, displayNumber) }
             .setNegativeButton("Batal", null)
             .show()
     }

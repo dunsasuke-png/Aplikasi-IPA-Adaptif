@@ -81,6 +81,12 @@
             app:destination="@id/pilihLevelFragment"
             app:popUpTo="@id/latihanFragment"
             app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/action_latihan_to_dashboard"
+            app:destination="@id/siswaDashboardFragment"
+            app:popUpTo="@id/siswaDashboardFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment

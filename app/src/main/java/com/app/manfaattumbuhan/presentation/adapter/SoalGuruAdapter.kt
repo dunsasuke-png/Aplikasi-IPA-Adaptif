@@ -9,8 +9,8 @@ import com.app.manfaattumbuhan.data.remote.model.SoalApi
 import com.app.manfaattumbuhan.databinding.ItemSoalGuruBinding
 
 class SoalGuruAdapter(
-    private val onEdit: (SoalApi) -> Unit,
-    private val onDelete: (SoalApi) -> Unit
+    private val onEdit: (SoalApi, Int) -> Unit,
+    private val onDelete: (SoalApi, Int) -> Unit
 ) : ListAdapter<SoalApi, SoalGuruAdapter.ViewHolder>(DiffCallback()) {
 
     var pageOffset: Int = 0
@@ -31,8 +31,8 @@ class SoalGuruAdapter(
                 else -> "Pre-test"
             }
 
-            binding.btnEdit.setOnClickListener { onEdit(soal) }
-            binding.btnDelete.setOnClickListener { onDelete(soal) }
+            binding.btnEdit.setOnClickListener { onEdit(soal, displayNumber) }
+            binding.btnDelete.setOnClickListener { onDelete(soal, displayNumber) }
         }
 
         private fun parsePilihanPreview(deskripsi: String): String {

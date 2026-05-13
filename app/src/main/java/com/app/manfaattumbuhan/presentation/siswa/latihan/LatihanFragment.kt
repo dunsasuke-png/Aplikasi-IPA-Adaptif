@@ -337,12 +337,16 @@ class LatihanFragment : Fragment() {
         val dialogBuilder = MaterialAlertDialogBuilder(requireContext())
             .setTitle(title)
             .setMessage(message.toString())
-            .setPositiveButton("Lihat Tingkat Kesulitan") { _, _ ->
-                findNavController().navigate(R.id.action_latihan_to_pilihLevel)
-            }
             .setCancelable(false)
 
-        if (tingkat != "Pre-test") {
+        if (tingkat == "Pre-test") {
+            dialogBuilder.setPositiveButton("Ke Beranda") { _, _ ->
+                findNavController().navigate(R.id.action_latihan_to_dashboard)
+            }
+        } else {
+            dialogBuilder.setPositiveButton("Lihat Tingkat Kesulitan") { _, _ ->
+                findNavController().navigate(R.id.action_latihan_to_pilihLevel)
+            }
             dialogBuilder.setNegativeButton("Kembali") { _, _ ->
                 findNavController().navigateUp()
             }

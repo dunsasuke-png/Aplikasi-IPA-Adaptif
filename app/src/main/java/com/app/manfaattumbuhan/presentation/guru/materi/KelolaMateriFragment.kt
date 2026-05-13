@@ -392,9 +392,9 @@ class KelolaMateriFragment : Fragment() {
     private fun showDeleteConfirmation(materi: MateriApi) {
         AlertDialog.Builder(requireContext())
             .setTitle("Hapus Materi")
-            .setMessage("Yakin ingin menghapus materi \"${materi.nama}\"?")
+            .setMessage("Yakin ingin menghapus materi No. ${materi.urutan}?")
             .setPositiveButton("Hapus") { _, _ ->
-                viewModel.deleteMateri(materi.id, materi.nama)
+                viewModel.deleteMateri(materi.id, materi.urutan)
             }
             .setNegativeButton("Batal", null)
             .show()
