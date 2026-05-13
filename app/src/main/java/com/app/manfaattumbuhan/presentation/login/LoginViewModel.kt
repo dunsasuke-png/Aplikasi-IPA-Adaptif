@@ -34,6 +34,11 @@ class LoginViewModel : ViewModel() {
             return
         }
 
+        if (password.length < 7) {
+            _loginResult.value = LoginResult.Error("Password minimal 7 karakter")
+            return
+        }
+
         val role = _selectedRole.value
         if (role == null) {
             _loginResult.value = LoginResult.Error("Pilih peran terlebih dahulu")

@@ -89,7 +89,6 @@ class ProfilGuruFragment : Fragment() {
                 if (response.isSuccessful && response.body()?.success == true) {
                     val guru = response.body()!!.data!!
                     TokenManager.saveGuruInfo(
-                        nip = guru.nip ?: "",
                         sekolah = guru.sekolah ?: "",
                         mapel = guru.mapel ?: ""
                     )
@@ -117,7 +116,6 @@ class ProfilGuruFragment : Fragment() {
 
     private fun loadProfilData() {
         binding.tvNamaGuru.text = TokenManager.getUserName()
-        binding.tvNipValue.text = TokenManager.getGuruNip().ifBlank { "-" }
         binding.tvSekolahValue.text = TokenManager.getGuruSekolah().ifBlank { "-" }
         binding.tvMapelValue.text = TokenManager.getGuruMapel().ifBlank { "-" }
 
@@ -137,7 +135,6 @@ class ProfilGuruFragment : Fragment() {
         uploadedFotoUrl = null
         val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_edit_profil_guru, null)
         val etNama = dialogView.findViewById<EditText>(R.id.etEditNamaGuru)
-        val etNip = dialogView.findViewById<EditText>(R.id.etEditNipGuru)
         val etSekolah = dialogView.findViewById<EditText>(R.id.etEditSekolahGuru)
         val etMapel = dialogView.findViewById<EditText>(R.id.etEditMapelGuru)
         val etPassword = dialogView.findViewById<EditText>(R.id.etEditPasswordGuru)
@@ -152,7 +149,6 @@ class ProfilGuruFragment : Fragment() {
         dialogFotoStatus = tvFotoStatus
 
         etNama.setText(TokenManager.getUserName())
-        etNip.setText(TokenManager.getGuruNip())
         etSekolah.setText(TokenManager.getGuruSekolah())
         etMapel.setText(TokenManager.getGuruMapel())
 
@@ -185,17 +181,16 @@ class ProfilGuruFragment : Fragment() {
                     return@setPositiveButton
                 }
 
-                if (password.isNotBlank() && password.length < 6) {
-                    Toast.makeText(requireContext(), "Password minimal 6 karakter", Toast.LENGTH_SHORT).show()
+                if (password.isNotBlank() && password.length < 7) {
+                    Toast.makeText(requireContext(), "Password minimal 7 karakter", Toast.LENGTH_SHORT).show()
                     return@setPositiveButton
                 }
 
-                val nip = etNip.text.toString().trim()
                 val sekolah = etSekolah.text.toString().trim()
                 val mapel = etMapel.text.toString().trim()
                 val fotoUrl = uploadedFotoUrl
 
-                updateProfilViaApi(nama, nip, sekolah, mapel, password, fotoUrl)
+                updateProfilViaApi(nama, sekolah, mapel, password, fotoUrl)
             }
             .setNegativeButton("Batal", null)
             .show()
@@ -203,7 +198,6 @@ class ProfilGuruFragment : Fragment() {
 
     private fun updateProfilViaApi(
         nama: String,
-        nip: String,
         sekolah: String,
         mapel: String,
         password: String,
@@ -215,7 +209,6 @@ class ProfilGuruFragment : Fragment() {
         val request = UpdateGuruProfilRequest(
             nama = nama,
             password = if (password.isNotBlank()) password else null,
-            nip = nip.ifBlank { null },
             sekolah = sekolah.ifBlank { null },
             mapel = mapel.ifBlank { null },
             foto_profil = fotoUrl
@@ -238,17 +231,16 @@ class ProfilGuruFragment : Fragment() {
                     loadProfilData()
                     Toast.makeText(requireContext(), "Profil berhasil diperbarui", Toast.LENGTH_SHORT).show()
                 } else {
-                    saveProfilLocally(nama, nip, sekolah, mapel, fotoUrl, token, userId)
+                    saveProfilLocally(nama, sekolah, mapel, fotoUrl, token, userId)
                 }
             } catch (_: Exception) {
-                saveProfilLocally(nama, nip, sekolah, mapel, fotoUrl, token, userId)
+                saveProfilLocally(nama, sekolah, mapel, fotoUrl, token, userId)
             }
         }
     }
 
     private fun saveProfilLocally(
         nama: String,
-        nip: String,
         sekolah: String,
         mapel: String,
         fotoUrl: String?,
@@ -259,12 +251,11 @@ class ProfilGuruFragment : Fragment() {
             token = token.removePrefix("Bearer "),
             id = userId,
             nama = nama,
-            nip = nip,
             sekolah = sekolah,
             mapel = mapel,
             fotoProfil = fotoUrl ?: TokenManager.getGuruFoto()
         )
-        TokenManager.saveGuruInfo(nip, sekolah, mapel)
+        TokenManager.saveGuruInfo(sekolah, mapel)
         if (fotoUrl != null) {
             TokenManager.saveGuruFoto(fotoUrl)
         }

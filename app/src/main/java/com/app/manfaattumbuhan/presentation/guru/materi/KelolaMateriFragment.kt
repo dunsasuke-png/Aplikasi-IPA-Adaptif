@@ -394,7 +394,7 @@ class KelolaMateriFragment : Fragment() {
             .setTitle("Hapus Materi")
             .setMessage("Yakin ingin menghapus materi \"${materi.nama}\"?")
             .setPositiveButton("Hapus") { _, _ ->
-                viewModel.deleteMateri(materi.id)
+                viewModel.deleteMateri(materi.id, materi.nama)
             }
             .setNegativeButton("Batal", null)
             .show()

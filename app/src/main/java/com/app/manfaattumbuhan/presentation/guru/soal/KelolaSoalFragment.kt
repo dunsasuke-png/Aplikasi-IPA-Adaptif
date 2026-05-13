@@ -212,6 +212,8 @@ class KelolaSoalFragment : Fragment() {
 
     private fun observeData() {
         viewModel.soalList.observe(viewLifecycleOwner) { list ->
+            val currentPage = viewModel.currentPage.value ?: 1
+            adapter.pageOffset = (currentPage - 1) * KelolaSoalViewModel.ITEMS_PER_PAGE
             adapter.submitList(list)
             binding.tvEmptyState.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
         }
@@ -238,6 +240,12 @@ class KelolaSoalFragment : Fragment() {
 
         viewModel.error.observe(viewLifecycleOwner) { err ->
             err?.let { Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show() }
+        }
+
+        viewModel.message.observe(viewLifecycleOwner) { msg ->
+            if (msg.isNotBlank()) {
+                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -568,7 +576,7 @@ class KelolaSoalFragment : Fragment() {
         AlertDialog.Builder(requireContext())
             .setTitle("Hapus Soal")
             .setMessage("Yakin ingin menghapus soal \"${soal.judul}\"?")
-            .setPositiveButton("Hapus") { _, _ -> viewModel.deleteSoal(soal.id) }
+            .setPositiveButton("Hapus") { _, _ -> viewModel.deleteSoal(soal.id, soal.judul) }
             .setNegativeButton("Batal", null)
             .show()
     }

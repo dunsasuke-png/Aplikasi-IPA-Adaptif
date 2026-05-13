@@ -113,29 +113,6 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="NIP"
-                        android:textColor="@color/gray_text"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/tvNipValue"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="-"
-                        android:textColor="@color/green_dark"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingVertical="6dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:text="Sekolah"
                         android:textColor="@color/gray_text"
                         android:textSize="14sp" />

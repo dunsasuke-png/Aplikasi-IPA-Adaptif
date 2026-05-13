@@ -13,10 +13,13 @@ class SoalGuruAdapter(
     private val onDelete: (SoalApi) -> Unit
 ) : ListAdapter<SoalApi, SoalGuruAdapter.ViewHolder>(DiffCallback()) {
 
+    var pageOffset: Int = 0
+
     inner class ViewHolder(private val binding: ItemSoalGuruBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(soal: SoalApi) {
+        fun bind(soal: SoalApi, displayNumber: Int) {
+            binding.tvNomor.text = "No. $displayNumber"
             binding.tvJudul.text = soal.judul
             binding.tvDeskripsi.text = parsePilihanPreview(soal.deskripsi)
             binding.tvTerakhirDiubah.text = "Dibuat: ${soal.created_at?.take(10) ?: "-"}"
@@ -60,7 +63,7 @@ class SoalGuruAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), pageOffset + position + 1)
     }
 
     class DiffCallback : DiffUtil.ItemCallback<SoalApi>() {

@@ -28,6 +28,9 @@ class KelolaSoalViewModel : ViewModel() {
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
+    private val _message = MutableLiveData<String>()
+    val message: LiveData<String> = _message
+
     private val _currentPage = MutableLiveData(1)
     val currentPage: LiveData<Int> = _currentPage
 
@@ -91,6 +94,7 @@ class KelolaSoalViewModel : ViewModel() {
                     CreateSoalRequest(judul, deskripsi, videoUrl, fotoUrl, tingkat)
                 )
                 if (response.isSuccessful && response.body()?.success == true) {
+                    _message.postValue("Soal \"$judul\" berhasil ditambahkan")
                     loadSoal()
                 } else {
                     _error.postValue(response.body()?.message ?: "Gagal membuat soal")
@@ -110,6 +114,7 @@ class KelolaSoalViewModel : ViewModel() {
                     UpdateSoalRequest(judul, deskripsi, videoUrl, fotoUrl, tingkat)
                 )
                 if (response.isSuccessful && response.body()?.success == true) {
+                    _message.postValue("Soal \"$judul\" berhasil diperbarui")
                     loadSoal()
                 } else {
                     _error.postValue(response.body()?.message ?: "Gagal memperbarui soal")
@@ -120,12 +125,13 @@ class KelolaSoalViewModel : ViewModel() {
         }
     }
 
-    fun deleteSoal(id: String) {
+    fun deleteSoal(id: String, judul: String = "") {
         viewModelScope.launch {
             try {
                 val token = TokenManager.getToken()
                 val response = apiService.deleteSoal(token, id)
                 if (response.isSuccessful) {
+                    _message.postValue("Soal \"$judul\" berhasil dihapus")
                     loadSoal()
                 } else {
                     _error.postValue("Gagal menghapus soal")
