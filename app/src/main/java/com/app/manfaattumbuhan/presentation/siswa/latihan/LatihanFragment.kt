@@ -303,6 +303,10 @@ class LatihanFragment : Fragment() {
             StaticData.unlockLevel(userIdInt, "Sedang")
         }
 
+        if (userIdStr.isNotBlank() && assignedLevel == "Sulit") {
+            TokenManager.setEverReachedSulit(userIdStr)
+        }
+
         if (userIdStr.isNotBlank()) {
             if (tingkat == "Pre-test") {
                 TokenManager.setPretestDone(userIdStr, true)

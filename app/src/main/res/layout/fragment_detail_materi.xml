@@ -100,6 +100,16 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSudahBelajar"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="24dp"
+                android:text="Saya Sudah Mempelajari Materi"
+                app:backgroundTint="@color/green_primary"
+                app:cornerRadius="12dp"
+                app:icon="@drawable/ic_check"
+                app:iconGravity="textStart" />
 
         </LinearLayout>
     </LinearLayout>

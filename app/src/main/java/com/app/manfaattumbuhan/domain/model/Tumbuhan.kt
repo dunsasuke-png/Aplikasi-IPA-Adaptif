@@ -8,5 +8,6 @@ data class Tumbuhan(
     val imageRes: Int = 0,
     val gambarUrl: String? = null,
     val videoUrl: String? = null,
-    val apiId: String? = null
+    val apiId: String? = null,
+    val urutan: Int = 0
 )

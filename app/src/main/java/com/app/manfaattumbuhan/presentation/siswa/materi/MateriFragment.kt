@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -19,6 +20,7 @@ class MateriFragment : Fragment() {
 
     private var _binding: FragmentMateriBinding? = null
     private val binding get() = _binding!!
+    private lateinit var adapter: TumbuhanAdapter
     private val viewModel: MateriViewModel by viewModels {
         MateriViewModelFactory(GetTumbuhanUseCase(TumbuhanRepositoryImpl()))
     }
@@ -36,7 +38,7 @@ class MateriFragment : Fragment() {
 
         TokenManager.init(requireContext())
 
-        val adapter = TumbuhanAdapter { tumbuhan ->
+        adapter = TumbuhanAdapter { tumbuhan ->
             val bundle = Bundle().apply {
                 putInt("tumbuhanId", tumbuhan.id)
                 putString("tumbuhanNama", tumbuhan.nama)
@@ -54,10 +56,41 @@ class MateriFragment : Fragment() {
 
         viewModel.loadTumbuhan()
         viewModel.tumbuhanList.observe(viewLifecycleOwner) { list ->
+            adapter.lockedIndices = getLockedIndices(list.size)
             adapter.submitList(list)
         }
+    }
 
+    override fun onResume() {
+        super.onResume()
+        val list = viewModel.tumbuhanList.value
+        if (list != null) {
+            adapter.lockedIndices = getLockedIndices(list.size)
+            adapter.notifyDataSetChanged()
+        }
+    }
 
+    private fun getLockedIndices(totalMateri: Int): Set<Int> {
+        val userId = TokenManager.getUserId()
+        val pretestDone = TokenManager.isPretestDone(userId)
+        if (!pretestDone) return (0 until totalMateri).toSet()
+
+        val everSulit = TokenManager.hasEverReachedSulit(userId)
+        if (everSulit) return emptySet()
+
+        val currentLevel = TokenManager.getCurrentLevel(userId)
+        val maxUnlocked = when (currentLevel) {
+            "Mudah" -> 2
+            "Sedang" -> 4
+            "Sulit" -> 6
+            else -> 0
+        }
+
+        val locked = mutableSetOf<Int>()
+        for (i in 0 until totalMateri) {
+            if (i >= maxUnlocked) locked.add(i)
+        }
+        return locked
     }
 
     override fun onDestroyView() {

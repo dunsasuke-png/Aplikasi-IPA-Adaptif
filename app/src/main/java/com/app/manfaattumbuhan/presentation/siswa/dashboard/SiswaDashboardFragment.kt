@@ -52,8 +52,11 @@ class SiswaDashboardFragment : Fragment() {
         }
 
         binding.cardLatihanSoal.setOnClickListener {
-            if (!TokenManager.isPretestDone(TokenManager.getUserId())) {
+            val uid = TokenManager.getUserId()
+            if (!TokenManager.isPretestDone(uid)) {
                 Toast.makeText(requireContext(), "Selesaikan pre-test terlebih dahulu", Toast.LENGTH_SHORT).show()
+            } else if (!TokenManager.areAllUnlockedMateriStudied(uid)) {
+                Toast.makeText(requireContext(), "Pelajari semua materi yang tersedia terlebih dahulu", Toast.LENGTH_SHORT).show()
             } else {
                 findNavController().navigate(R.id.action_dashboard_to_pilih_level)
             }
@@ -87,11 +90,19 @@ class SiswaDashboardFragment : Fragment() {
     }
 
     private fun updateLatihanCard(pretestDone: Boolean) {
-        if (pretestDone) {
+        val userId = TokenManager.getUserId()
+        val materiStudied = TokenManager.areAllUnlockedMateriStudied(userId)
+
+        if (pretestDone && materiStudied) {
             binding.cardLatihanSoal.alpha = 1f
             binding.tvLatihanDesc.text = "Uji pemahamanmu dengan kuis interaktif."
             binding.imgLatihanIcon.setImageResource(R.drawable.ic_arrow_right)
             binding.imgLatihanIcon.imageTintList = ContextCompat.getColorStateList(requireContext(), R.color.green_primary)
+        } else if (pretestDone) {
+            binding.cardLatihanSoal.alpha = 0.5f
+            binding.tvLatihanDesc.text = "Pelajari semua materi terlebih dahulu."
+            binding.imgLatihanIcon.setImageResource(R.drawable.ic_lock)
+            binding.imgLatihanIcon.imageTintList = ContextCompat.getColorStateList(requireContext(), R.color.gray_text)
         } else {
             binding.cardLatihanSoal.alpha = 0.5f
             binding.tvLatihanDesc.text = "Selesaikan pre-test terlebih dahulu."
@@ -132,17 +143,19 @@ class SiswaDashboardFragment : Fragment() {
         message.appendLine("   • Kerjakan pre-test terlebih dahulu untuk menentukan level kemampuanmu.")
         message.appendLine("   • Pre-test hanya dapat dikerjakan satu kali.")
         message.appendLine("   • Setelah pre-test, sistem akan menentukan level soal yang sesuai untukmu.\n")
-        message.appendLine("2. LATIHAN SOAL")
-        message.appendLine("   • Latihan soal baru bisa diakses setelah pre-test selesai.")
+        message.appendLine("2. MATERI")
+        message.appendLine("   • Setelah pre-test, materi akan terbuka sesuai levelmu.")
+        message.appendLine("   • Materi 1-2 untuk level Mudah, Materi 3-4 untuk Sedang, Materi 5-6 untuk Sulit.")
+        message.appendLine("   • Jika pernah mencapai level Sulit, semua materi terbuka.")
+        message.appendLine("   • Tekan \"Saya Sudah Mempelajari Materi\" setelah selesai membaca.\n")
+        message.appendLine("3. LATIHAN SOAL")
+        message.appendLine("   • Latihan soal baru bisa diakses setelah mempelajari semua materi yang tersedia.")
         message.appendLine("   • Pilih tingkat kesulitan: Mudah, Sedang, atau Sulit.")
         message.appendLine("   • Setiap latihan terdiri dari maksimal 10 soal pilihan ganda.")
         message.appendLine("   • Waktu pengerjaan akan dicatat untuk analisis kemampuanmu.")
         message.appendLine("   • Tekan tombol \"Mulai\" untuk memulai — timer berjalan setelah itu.\n")
-        message.appendLine("3. RIWAYAT NILAI")
+        message.appendLine("4. RIWAYAT NILAI")
         message.appendLine("   • Lihat semua nilai dari latihan soal yang sudah kamu kerjakan.\n")
-        message.appendLine("4. MATERI")
-        message.appendLine("   • Akses materi pelajaran IPA melalui menu Materi di navigasi bawah.")
-        message.appendLine("   • Baca deskripsi dan tonton video pembelajaran.\n")
         message.appendLine("5. PROFIL")
         message.appendLine("   • Ubah nama, password, dan foto profil melalui menu Profil.")
 

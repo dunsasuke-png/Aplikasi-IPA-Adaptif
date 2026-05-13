@@ -20,6 +20,8 @@ object TokenManager {
     private const val KEY_UNLOCKED_LEVELS_PREFIX = "unlocked_levels_"
     private const val KEY_CURRENT_LEVEL_PREFIX = "current_level_"
     private const val KEY_FUZZY_OUTPUT_PREFIX = "fuzzy_output_"
+    private const val KEY_MATERI_STUDIED_PREFIX = "materi_studied_"
+    private const val KEY_EVER_REACHED_SULIT_PREFIX = "ever_reached_sulit_"
 
     private lateinit var prefs: SharedPreferences
 
@@ -145,5 +147,50 @@ object TokenManager {
     fun getFuzzyOutputValue(userId: String): Double {
         if (userId.isBlank()) return 0.0
         return prefs.getFloat(KEY_FUZZY_OUTPUT_PREFIX + userId, 0f).toDouble()
+    }
+
+    fun setMateriStudied(userId: String, materiIndex: Int, studied: Boolean = true) {
+        if (userId.isBlank()) return
+        prefs.edit().putBoolean("${KEY_MATERI_STUDIED_PREFIX}${userId}_$materiIndex", studied).apply()
+    }
+
+    fun isMateriStudied(userId: String, materiIndex: Int): Boolean {
+        if (userId.isBlank()) return false
+        return prefs.getBoolean("${KEY_MATERI_STUDIED_PREFIX}${userId}_$materiIndex", false)
+    }
+
+    fun getStudiedMateriCount(userId: String): Int {
+        if (userId.isBlank()) return 0
+        var count = 0
+        for (i in 1..6) {
+            if (isMateriStudied(userId, i)) count++
+        }
+        return count
+    }
+
+    fun areAllUnlockedMateriStudied(userId: String): Boolean {
+        if (userId.isBlank()) return false
+        val level = getCurrentLevel(userId) ?: return false
+        val everSulit = hasEverReachedSulit(userId)
+        val maxMateri = if (everSulit) 6 else when (level) {
+            "Mudah" -> 2
+            "Sedang" -> 4
+            "Sulit" -> 6
+            else -> 0
+        }
+        for (i in 1..maxMateri) {
+            if (!isMateriStudied(userId, i)) return false
+        }
+        return maxMateri > 0
+    }
+
+    fun setEverReachedSulit(userId: String) {
+        if (userId.isBlank()) return
+        prefs.edit().putBoolean(KEY_EVER_REACHED_SULIT_PREFIX + userId, true).apply()
+    }
+
+    fun hasEverReachedSulit(userId: String): Boolean {
+        if (userId.isBlank()) return false
+        return prefs.getBoolean(KEY_EVER_REACHED_SULIT_PREFIX + userId, false)
     }
 }
