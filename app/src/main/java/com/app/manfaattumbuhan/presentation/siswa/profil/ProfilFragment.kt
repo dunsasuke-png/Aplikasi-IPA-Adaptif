@@ -121,6 +121,11 @@ class ProfilFragment : Fragment() {
                     return@setPositiveButton
                 }
 
+                if (password != null && password.length < 7) {
+                    Toast.makeText(requireContext(), "Password minimal 7 karakter", Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
+
                 simpanProfil(nama, password, fotoProfil)
             }
             .setNegativeButton("Batal", null)

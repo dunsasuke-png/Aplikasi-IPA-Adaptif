@@ -89,6 +89,10 @@ class KelolaAkunFragment : Fragment() {
                 val password = views.etPassword.text.toString().trim()
 
                 if (nim.isNotBlank() && nama.isNotBlank() && password.isNotBlank() && kelas.isNotBlank()) {
+                    if (password.length < 7) {
+                        Toast.makeText(context, "Password minimal 7 karakter", Toast.LENGTH_SHORT).show()
+                        return@setPositiveButton
+                    }
                     viewModel.addSiswa(nim, nama, kelas, password)
                 } else {
                     Toast.makeText(context, "Semua field wajib diisi", Toast.LENGTH_SHORT).show()
@@ -115,6 +119,11 @@ class KelolaAkunFragment : Fragment() {
                 val nim = views.etNim.text.toString().trim().ifBlank { null }
                 val kelas = views.etKelas.text.toString().trim().ifBlank { null }
                 val password = views.etPassword.text.toString().trim().ifBlank { null }
+
+                if (password != null && password.length < 7) {
+                    Toast.makeText(context, "Password minimal 7 karakter", Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
 
                 viewModel.updateSiswa(siswa.id, nama, nim, kelas, password)
             }

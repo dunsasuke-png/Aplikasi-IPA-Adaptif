@@ -82,9 +82,8 @@ object TokenManager {
         prefs.edit().putString(KEY_SISWA_FOTO, url).apply()
     }
 
-    fun saveGuruInfo(nip: String, sekolah: String, mapel: String) {
+    fun saveGuruInfo(sekolah: String, mapel: String) {
         prefs.edit().apply {
-            putString(KEY_GURU_NIP, nip)
             putString(KEY_GURU_SEKOLAH, sekolah)
             putString(KEY_GURU_MAPEL, mapel)
             apply()
