@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+    <!-- Background -->
+    <path android:fillColor="#E8F5E9" android:pathData="M0,0h200v200h-200z" />
+    <!-- Ground -->
+    <path android:fillColor="#8D6E63" android:pathData="M0,170h200v30h-200z" />
+    <!-- Tree trunk -->
+    <path android:fillColor="#795548" android:pathData="M90,170 L85,120 L88,80 L95,80 L98,120 L100,170z" />
+    <!-- Main branch left -->
+    <path android:strokeColor="#795548" android:strokeWidth="4" android:pathData="M90,110 Q70,95 55,85" />
+    <!-- Main branch right -->
+    <path android:strokeColor="#795548" android:strokeWidth="4" android:pathData="M95,100 Q115,85 130,78" />
+    <!-- Crown (large green canopy) -->
+    <path android:fillColor="#43A047" android:pathData="M100,20 Q140,25 155,55 Q165,80 145,95 Q130,105 100,108 Q70,105 55,95 Q35,80 45,55 Q60,25 100,20z" />
+    <!-- Crown layer 2 -->
+    <path android:fillColor="#66BB6A" android:pathData="M100,30 Q130,35 140,55 Q148,75 135,88 Q120,98 100,100 Q80,98 65,88 Q52,75 60,55 Q70,35 100,30z" />
+    <!-- Highlights -->
+    <path android:fillColor="#81C784" android:pathData="M85,45 Q100,40 110,50 Q105,60 90,58 Q80,55 85,45z" />
+    <path android:fillColor="#81C784" android:pathData="M110,60 Q125,55 128,65 Q125,75 115,72 Q105,68 110,60z" />
+    <!-- Large leaves -->
+    <path android:fillColor="#388E3C" android:pathData="M55,85 Q45,75 50,90 Q55,95 55,85z" />
+    <path android:fillColor="#388E3C" android:pathData="M145,75 Q155,65 150,80 Q145,85 145,75z" />
+</vector>

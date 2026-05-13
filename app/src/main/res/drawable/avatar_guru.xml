@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <!-- Background circle -->
+    <path
+        android:fillColor="#2E7D32"
+        android:pathData="M50,0C77.61,0 100,22.39 100,50C100,77.61 77.61,100 50,100C22.39,100 0,77.61 0,50C0,22.39 22.39,0 50,0Z" />
+    <!-- Person head -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M50,28C55.52,28 60,32.48 60,38C60,43.52 55.52,48 50,48C44.48,48 40,43.52 40,38C40,32.48 44.48,28 50,28Z" />
+    <!-- Person body -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M50,52C40,52 30,57.33 30,62L30,68L70,68L70,62C70,57.33 60,52 50,52Z" />
+</vector>
