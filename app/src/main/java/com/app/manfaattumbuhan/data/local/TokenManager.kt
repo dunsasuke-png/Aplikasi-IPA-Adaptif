@@ -10,7 +10,6 @@ object TokenManager {
     private const val KEY_USER_ID = "user_id"
     private const val KEY_USER_NAME = "user_name"
     private const val KEY_USER_NISN = "user_nisn"
-    private const val KEY_USER_NIM = "user_nim" // legacy
     private const val KEY_USER_KELAS = "user_kelas"
     private const val KEY_GURU_FOTO = "guru_foto"
     private const val KEY_SISWA_FOTO = "siswa_foto"
@@ -61,7 +60,6 @@ object TokenManager {
             putString(KEY_USER_ID, id)
             putString(KEY_USER_NAME, nama)
             putString(KEY_USER_NISN, nisn)
-            putString(KEY_USER_NIM, nisn)
             putString(KEY_USER_KELAS, kelas)
             putString(KEY_SISWA_FOTO, fotoProfil ?: "")
             apply()
@@ -72,11 +70,7 @@ object TokenManager {
     fun getUserRole(): String = prefs.getString(KEY_USER_ROLE, "") ?: ""
     fun getUserId(): String = prefs.getString(KEY_USER_ID, "") ?: ""
     fun getUserName(): String = prefs.getString(KEY_USER_NAME, "") ?: ""
-    fun getUserNisn(): String {
-        val nisn = prefs.getString(KEY_USER_NISN, "") ?: ""
-        if (nisn.isNotBlank()) return nisn
-        return prefs.getString(KEY_USER_NIM, "") ?: ""
-    }
+    fun getUserNisn(): String = prefs.getString(KEY_USER_NISN, "") ?: ""
     fun getUserKelas(): String = prefs.getString(KEY_USER_KELAS, "") ?: ""
     fun getGuruFoto(): String = prefs.getString(KEY_GURU_FOTO, "") ?: ""
     fun getSiswaFoto(): String = prefs.getString(KEY_SISWA_FOTO, "") ?: ""
@@ -110,7 +104,6 @@ object TokenManager {
             remove(KEY_USER_ID)
             remove(KEY_USER_NAME)
             remove(KEY_USER_NISN)
-            remove(KEY_USER_NIM)
             remove(KEY_USER_KELAS)
             apply()
         }

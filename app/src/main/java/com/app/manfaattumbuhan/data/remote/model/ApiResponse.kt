@@ -36,7 +36,7 @@ data class GuruInfo(
 )
 
 data class LoginSiswaRequest(
-    @SerializedName("nim")
+    @SerializedName("nim") // backend API field = "nim"
     val nisn: String,
     val password: String
 )
@@ -49,7 +49,7 @@ data class LoginSiswaResponse(
 // Siswa
 data class SiswaInfo(
     val id: String,
-    @SerializedName("nim")
+    @SerializedName("nim") // backend API field = "nim"
     val nisn: String,
     val nama: String,
     val kelas: String,
@@ -58,7 +58,7 @@ data class SiswaInfo(
 )
 
 data class CreateSiswaRequest(
-    @SerializedName("nim")
+    @SerializedName("nim") // backend API field = "nim"
     val nisn: String,
     val nama: String,
     val kelas: String,
@@ -67,7 +67,7 @@ data class CreateSiswaRequest(
 )
 
 data class UpdateSiswaRequest(
-    @SerializedName("nim")
+    @SerializedName("nim") // backend API field = "nim"
     val nisn: String? = null,
     val nama: String? = null,
     val kelas: String? = null,
