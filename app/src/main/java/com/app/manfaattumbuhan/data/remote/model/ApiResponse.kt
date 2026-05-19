@@ -1,6 +1,5 @@
 package com.app.manfaattumbuhan.data.remote.model
 
-import com.google.gson.annotations.SerializedName
 
 data class ApiResponse<T>(
     val success: Boolean,
@@ -36,7 +35,6 @@ data class GuruInfo(
 )
 
 data class LoginSiswaRequest(
-    @SerializedName("nim") // backend API field = "nim"
     val nisn: String,
     val password: String
 )
@@ -49,7 +47,6 @@ data class LoginSiswaResponse(
 // Siswa
 data class SiswaInfo(
     val id: String,
-    @SerializedName("nim") // backend API field = "nim"
     val nisn: String,
     val nama: String,
     val kelas: String,
@@ -58,7 +55,6 @@ data class SiswaInfo(
 )
 
 data class CreateSiswaRequest(
-    @SerializedName("nim") // backend API field = "nim"
     val nisn: String,
     val nama: String,
     val kelas: String,
@@ -67,7 +63,6 @@ data class CreateSiswaRequest(
 )
 
 data class UpdateSiswaRequest(
-    @SerializedName("nim") // backend API field = "nim"
     val nisn: String? = null,
     val nama: String? = null,
     val kelas: String? = null,
