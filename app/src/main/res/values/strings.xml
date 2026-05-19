@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Manfaat Tumbuhan</string>
+
+    <!-- Login -->
+    <string name="login_title">Login</string>
+    <string name="login_subtitle">Silakan masuk untuk melanjutkan</string>
+    <string name="siswa">Siswa</string>
+    <string name="guru">Guru</string>
+    <string name="login_siswa_desc">Mulai belajar dengan visual</string>
+    <string name="login_guru_desc">Kelola soal &amp; materi belajar</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="masuk">Masuk</string>
+    <string name="nisn">NISN</string>
+
+    <string name="beranda">Beranda</string>
+    <string name="materi">Materi</string>
+    <string name="profil">Profil</string>
+    <string name="soal">Soal</string>
+    <string name="akun">Akun</string>
+    <string name="laporan">Laporan</string>
+
+    <!-- Dialog soal strings -->
+    <string name="teks_soal_hint">Teks Soal / Pertanyaan (opsional)</string>
+    <string name="foto_soal_label">Foto Soal (opsional)</string>
+    <string name="pilih_foto">📷 Pilih Foto dari Galeri</string>
+    <string name="video_soal_label">Video Soal (opsional)</string>
+    <string name="lihat_video">▶ Lihat Video</string>
+    <string name="pilih_video">🎬 Pilih Video dari Galeri</string>
+    <string name="tingkat_soal_label">Tingkat Soal</string>
+    <string name="pilih_tingkat_hint">Pilih Tingkat</string>
+    <string name="pilihan_jawaban_label">Pilihan Jawaban</string>
+    <string name="pilihan_a_hint">A. Jawaban A</string>
+    <string name="pilihan_b_hint">B. Jawaban B</string>
+    <string name="pilihan_c_hint">C. Jawaban C</string>
+    <string name="pilihan_d_hint">D. Jawaban D</string>
+    <string name="jawaban_benar_label">Jawaban Benar</string>
+    <string name="pilih_jawaban_hint">Pilih Jawaban Benar</string>
+    <string name="img_preview_desc">Preview foto soal</string>
+
+    <!-- Latihan -->
+    <string name="latihan_timer_default">00:00</string>
+    <string name="latihan_soal_counter_default">Soal 1 dari 20</string>
+    <string name="latihan_progress_default">Progres 0%%</string>
+    <string name="latihan_hint_perhatikan">Perhatikan soal berikut.</string>
+    <string name="latihan_pertanyaan_default">Pertanyaan soal</string>
+    <string name="latihan_btn_kembali">← Kembali</string>
+    <string name="latihan_btn_selanjutnya">Selanjutnya →</string>
+    <string name="latihan_btn_selesai">Selesai</string>
+    <string name="latihan_start_title">Siap Mengerjakan?</string>
+    <string name="latihan_start_desc">Waktu akan mulai berjalan setelah kamu menekan tombol Mulai.</string>
+    <string name="latihan_start_tingkat_default">Tingkat: Pre-test</string>
+    <string name="latihan_start_info_1">Maksimal 20 soal pilihan ganda</string>
+    <string name="latihan_start_info_2">Waktu dicatat untuk analisis kemampuanmu</string>
+    <string name="latihan_btn_belum_siap">Belum Siap</string>
+    <string name="latihan_btn_sudah_siap">Sudah Siap</string>
+    <string name="latihan_quiz_icon_desc">Ikon latihan</string>
+    <string name="latihan_soal_image_desc">Gambar soal</string>
+    <string name="latihan_alert_belum_selesai_title">Belum selesai</string>
+    <string name="latihan_alert_belum_selesai_msg">Masih ada soal yang belum dijawab. Silakan selesaikan semua soal terlebih dahulu.</string>
+</resources>

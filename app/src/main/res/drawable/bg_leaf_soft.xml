@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Soft base background -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#F4FBF6" />
+        </shape>
+    </item>
+
+    <!-- Subtle green blobs (decorative) -->
+    <item
+        android:gravity="top|end"
+        android:top="-18dp"
+        android:right="-18dp">
+        <shape android:shape="oval">
+            <size
+                android:width="220dp"
+                android:height="220dp" />
+            <!-- #AARRGGBB -->
+            <solid android:color="#1B2E7D32" />
+        </shape>
+    </item>
+
+    <item
+        android:gravity="bottom|start"
+        android:bottom="-28dp"
+        android:left="-28dp">
+        <shape android:shape="oval">
+            <size
+                android:width="260dp"
+                android:height="260dp" />
+            <solid android:color="#142E7D32" />
+        </shape>
+    </item>
+
+</layer-list>
+

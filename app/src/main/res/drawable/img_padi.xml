@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+    <!-- Background -->
+    <path android:fillColor="#E8F5E9" android:pathData="M0,0h200v200h-200z" />
+    <!-- Ground -->
+    <path android:fillColor="#8D6E63" android:pathData="M0,170h200v30h-200z" />
+    <!-- Stem 1 -->
+    <path android:strokeColor="#4CAF50" android:strokeWidth="3" android:pathData="M80,170 Q75,130 70,90 Q68,70 75,50" />
+    <!-- Stem 2 -->
+    <path android:strokeColor="#4CAF50" android:strokeWidth="3" android:pathData="M100,170 Q100,130 100,90 Q100,70 95,45" />
+    <!-- Stem 3 -->
+    <path android:strokeColor="#4CAF50" android:strokeWidth="3" android:pathData="M120,170 Q125,130 130,90 Q132,70 125,50" />
+    <!-- Leaves -->
+    <path android:fillColor="#66BB6A" android:pathData="M70,90 Q50,80 40,95 Q55,95 70,90z" />
+    <path android:fillColor="#66BB6A" android:pathData="M100,85 Q120,70 130,80 Q115,85 100,85z" />
+    <path android:fillColor="#66BB6A" android:pathData="M130,90 Q150,80 155,95 Q140,93 130,90z" />
+    <!-- Rice grains on stem 1 -->
+    <path android:fillColor="#FFD54F" android:pathData="M75,50 Q70,42 68,48 Q72,52 75,50z" />
+    <path android:fillColor="#FFD54F" android:pathData="M73,55 Q67,48 65,54 Q70,57 73,55z" />
+    <path android:fillColor="#FFD54F" android:pathData="M72,60 Q65,55 64,60 Q68,63 72,60z" />
+    <!-- Rice grains on stem 2 -->
+    <path android:fillColor="#FFD54F" android:pathData="M95,45 Q90,37 88,44 Q92,48 95,45z" />
+    <path android:fillColor="#FFD54F" android:pathData="M94,50 Q88,43 86,50 Q90,53 94,50z" />
+    <path android:fillColor="#FFD54F" android:pathData="M93,56 Q87,50 85,56 Q89,59 93,56z" />
+    <!-- Rice grains on stem 3 -->
+    <path android:fillColor="#FFD54F" android:pathData="M125,50 Q130,42 132,48 Q128,52 125,50z" />
+    <path android:fillColor="#FFD54F" android:pathData="M127,55 Q133,48 135,54 Q130,57 127,55z" />
+    <path android:fillColor="#FFD54F" android:pathData="M128,60 Q135,55 136,60 Q132,63 128,60z" />
+    <!-- Label -->
+    <path android:fillColor="#2E7D32" android:pathData="M50,175 h100 v20 h-100z" />
+</vector>

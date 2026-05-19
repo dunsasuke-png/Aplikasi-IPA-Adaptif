@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+    <!-- Background -->
+    <path android:fillColor="#E8F5E9" android:pathData="M0,0h200v200h-200z" />
+    <!-- Pot -->
+    <path android:fillColor="#A1887F" android:pathData="M65,145 L70,180 L130,180 L135,145z" />
+    <path android:fillColor="#8D6E63" android:pathData="M60,138 L140,138 L140,150 L60,150z" />
+    <!-- Center leaf (tallest) -->
+    <path android:fillColor="#43A047" android:pathData="M100,138 Q95,100 92,60 Q100,30 108,60 Q105,100 100,138z" />
+    <!-- Leaf spines center -->
+    <path android:fillColor="#66BB6A" android:pathData="M96,80 L92,75 L96,78z" />
+    <path android:fillColor="#66BB6A" android:pathData="M104,80 L108,75 L104,78z" />
+    <path android:fillColor="#66BB6A" android:pathData="M96,100 L91,95 L96,98z" />
+    <path android:fillColor="#66BB6A" android:pathData="M104,100 L109,95 L104,98z" />
+    <!-- Left leaf 1 -->
+    <path android:fillColor="#4CAF50" android:pathData="M95,140 Q75,120 55,80 Q50,55 60,75 Q70,95 80,115 Q85,130 95,140z" />
+    <!-- Left leaf 2 (outer) -->
+    <path android:fillColor="#388E3C" android:pathData="M90,142 Q65,130 40,100 Q35,80 45,95 Q55,110 70,125 Q80,135 90,142z" />
+    <!-- Right leaf 1 -->
+    <path android:fillColor="#4CAF50" android:pathData="M105,140 Q125,120 145,80 Q150,55 140,75 Q130,95 120,115 Q115,130 105,140z" />
+    <!-- Right leaf 2 (outer) -->
+    <path android:fillColor="#388E3C" android:pathData="M110,142 Q135,130 160,100 Q165,80 155,95 Q145,110 130,125 Q120,135 110,142z" />
+    <!-- Gel texture on center leaf -->
+    <path android:fillColor="#66BB6A" android:pathData="M98,70 Q100,60 102,70 Q100,80 98,70z" />
+    <path android:fillColor="#66BB6A" android:pathData="M97,110 Q100,100 103,110 Q100,120 97,110z" />
+    <!-- Spines on left leaf -->
+    <path android:fillColor="#2E7D32" android:pathData="M70,105 L65,100 L70,103z" />
+    <path android:fillColor="#2E7D32" android:pathData="M60,90 L55,85 L60,88z" />
+    <!-- Spines on right leaf -->
+    <path android:fillColor="#2E7D32" android:pathData="M130,105 L135,100 L130,103z" />
+    <path android:fillColor="#2E7D32" android:pathData="M140,90 L145,85 L140,88z" />
+</vector>
