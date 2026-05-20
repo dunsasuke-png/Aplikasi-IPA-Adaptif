@@ -123,7 +123,7 @@ class KelolaMateriViewModel : ViewModel() {
     // CRUD
     // ──────────────────────────────────────────────────────────────────────────
 
-    fun createMateri(nama: String, manfaat: String, tingkat: String, gambarUrl: String?, videoUrl: String?) {
+    fun createMateri(nama: String, namaGambar: String, manfaat: String, tingkat: String, gambarUrl: String?, videoUrl: String?) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
@@ -133,7 +133,7 @@ class KelolaMateriViewModel : ViewModel() {
                 val urutanInLevel = allNow.count { it.tingkat == tingkat } + 1
                 val request  = CreateMateriRequest(
                     nama       = nama,
-                    deskripsi  = "-",
+                    deskripsi  = namaGambar.ifBlank { "-" },
                     manfaat    = manfaat,
                     gambar_url = gambarUrl,
                     video_url  = videoUrl,
@@ -155,14 +155,14 @@ class KelolaMateriViewModel : ViewModel() {
         }
     }
 
-    fun updateMateri(id: String, nama: String, manfaat: String, tingkat: String, gambarUrl: String?, videoUrl: String?, displayNumber: Int = 0) {
+    fun updateMateri(id: String, nama: String, namaGambar: String, manfaat: String, tingkat: String, gambarUrl: String?, videoUrl: String?, displayNumber: Int = 0) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
                 val auth     = TokenManager.getToken()
                 val request  = UpdateMateriRequest(
                     nama       = nama,
-                    deskripsi  = "-",
+                    deskripsi  = namaGambar.ifBlank { "-" },
                     manfaat    = manfaat,
                     gambar_url = gambarUrl,
                     video_url  = videoUrl,

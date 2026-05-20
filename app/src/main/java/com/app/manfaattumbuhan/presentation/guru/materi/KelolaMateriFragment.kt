@@ -359,6 +359,7 @@ class KelolaMateriFragment : Fragment() {
 
         val dialogView = layoutInflater.inflate(R.layout.dialog_materi, null)
         val etNama = dialogView.findViewById<EditText>(R.id.etNamaMateri)
+        val etNamaGambar = dialogView.findViewById<EditText>(R.id.etNamaGambar)
         val etManfaat = dialogView.findViewById<EditText>(R.id.etManfaatMateri)
         val spinnerTingkat = dialogView.findViewById<com.google.android.material.textfield.MaterialAutoCompleteTextView>(R.id.spinnerTingkat)
         val imgPreview = dialogView.findViewById<ImageView>(R.id.imgPreviewFoto)
@@ -399,6 +400,7 @@ class KelolaMateriFragment : Fragment() {
                 tvError.visibility = View.GONE
 
                 val nama = etNama.text.toString().trim()
+                val namaGambar = etNamaGambar.text.toString().trim()
                 val manfaat = etManfaat.text.toString().trim()
                 val tingkat = spinnerTingkat.text.toString().lowercase()
 
@@ -414,7 +416,7 @@ class KelolaMateriFragment : Fragment() {
                 }
 
                 dialog.dismiss()
-                viewModel.createMateri(nama, manfaat, tingkat, uploadedGambarUrl, uploadedVideoUrl)
+                viewModel.createMateri(nama, namaGambar, manfaat, tingkat, uploadedGambarUrl, uploadedVideoUrl)
             }
         }
         dialog.setOnDismissListener {
@@ -429,6 +431,7 @@ class KelolaMateriFragment : Fragment() {
 
         val dialogView = layoutInflater.inflate(R.layout.dialog_materi, null)
         val etNama = dialogView.findViewById<EditText>(R.id.etNamaMateri)
+        val etNamaGambar = dialogView.findViewById<EditText>(R.id.etNamaGambar)
         val etManfaat = dialogView.findViewById<EditText>(R.id.etManfaatMateri)
         val spinnerTingkat = dialogView.findViewById<com.google.android.material.textfield.MaterialAutoCompleteTextView>(R.id.spinnerTingkat)
         val imgPreview = dialogView.findViewById<ImageView>(R.id.imgPreviewFoto)
@@ -442,6 +445,7 @@ class KelolaMateriFragment : Fragment() {
         currentFotoButton = btnPilihGambar
 
         etNama.setText(materi.nama)
+        etNamaGambar.setText(materi.deskripsi.let { if (it == "-") "" else it })
         etManfaat.setText(materi.manfaat)
 
         // Setup spinner tingkat
@@ -484,6 +488,7 @@ class KelolaMateriFragment : Fragment() {
                 tvError.visibility = View.GONE
 
                 val nama = etNama.text.toString().trim()
+                val namaGambar = etNamaGambar.text.toString().trim()
                 val manfaat = etManfaat.text.toString().trim()
                 val tingkat = spinnerTingkat.text.toString().lowercase()
 
@@ -494,7 +499,7 @@ class KelolaMateriFragment : Fragment() {
                 }
 
                 dialog.dismiss()
-                viewModel.updateMateri(materi.id, nama, manfaat, tingkat, uploadedGambarUrl, uploadedVideoUrl, displayNumber)
+                viewModel.updateMateri(materi.id, nama, namaGambar, manfaat, tingkat, uploadedGambarUrl, uploadedVideoUrl, displayNumber)
             }
         }
         dialog.setOnDismissListener {

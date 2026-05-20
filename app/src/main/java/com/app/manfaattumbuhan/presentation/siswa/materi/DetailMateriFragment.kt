@@ -113,6 +113,13 @@ class DetailMateriFragment : Fragment() {
     @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
     private fun bindMateriData(tumbuhan: com.app.manfaattumbuhan.domain.model.Tumbuhan) {
         binding.tvNamaTumbuhan.text = tumbuhan.nama
+        val namaGambar = tumbuhan.deskripsi
+        if (namaGambar.isNotBlank() && namaGambar != "-") {
+            binding.tvNamaGambar.text = namaGambar
+            binding.tvNamaGambar.visibility = android.view.View.VISIBLE
+        } else {
+            binding.tvNamaGambar.visibility = android.view.View.GONE
+        }
         binding.tvManfaat.text = tumbuhan.manfaat
 
         if (!tumbuhan.gambarUrl.isNullOrBlank()) {
