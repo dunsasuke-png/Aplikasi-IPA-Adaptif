@@ -85,6 +85,19 @@
                     android:src="@drawable/img_padi" />
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Nama Tumbuhan di bawah gambar -->
+            <TextView
+                android:id="@+id/tvNamaGambar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-8dp"
+                android:layout_marginBottom="16dp"
+                android:gravity="center"
+                android:text="Nama Tumbuhan"
+                android:textColor="@color/green_dark"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
             <!-- Video Player -->
             <FrameLayout
                 android:id="@+id/videoContainer"

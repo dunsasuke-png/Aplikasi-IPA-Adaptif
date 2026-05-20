@@ -113,6 +113,7 @@ class DetailMateriFragment : Fragment() {
     @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
     private fun bindMateriData(tumbuhan: com.app.manfaattumbuhan.domain.model.Tumbuhan) {
         binding.tvNamaTumbuhan.text = tumbuhan.nama
+        binding.tvNamaGambar.text = tumbuhan.nama
         binding.tvManfaat.text = tumbuhan.manfaat
 
         if (!tumbuhan.gambarUrl.isNullOrBlank()) {

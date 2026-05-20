@@ -18,7 +18,7 @@
             app:boxCornerRadiusBottomStart="12dp"
             app:boxCornerRadiusTopEnd="12dp"
             app:boxCornerRadiusTopStart="12dp"
-            android:hint="Judul Materi">
+            android:hint="Nama Tumbuhan">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etNamaMateri"

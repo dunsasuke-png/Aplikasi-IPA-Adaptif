@@ -403,7 +403,7 @@ class KelolaMateriFragment : Fragment() {
                 val tingkat = spinnerTingkat.text.toString().lowercase()
 
                 if (nama.isBlank() || manfaat.isBlank()) {
-                    tvError.text = "⚠️ Judul dan isi materi harus diisi"
+                    tvError.text = "⚠️ Nama tumbuhan dan isi materi harus diisi"
                     tvError.visibility = View.VISIBLE
                     return@setOnClickListener
                 }
@@ -488,7 +488,7 @@ class KelolaMateriFragment : Fragment() {
                 val tingkat = spinnerTingkat.text.toString().lowercase()
 
                 if (nama.isBlank() || manfaat.isBlank()) {
-                    tvError.text = "⚠️ Judul dan isi materi harus diisi"
+                    tvError.text = "⚠️ Nama tumbuhan dan isi materi harus diisi"
                     tvError.visibility = View.VISIBLE
                     return@setOnClickListener
                 }
