@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_siswa"
+    app:startDestination="@id/siswaDashboardFragment">
+
+    <fragment
+        android:id="@+id/siswaDashboardFragment"
+        android:name="com.app.manfaattumbuhan.presentation.siswa.dashboard.SiswaDashboardFragment"
+        android:label="Beranda"
+        tools:layout="@layout/fragment_siswa_dashboard">
+
+        <action
+            android:id="@+id/action_dashboard_to_materi"
+            app:destination="@id/materiFragment" />
+
+        <action
+            android:id="@+id/action_dashboard_to_pilih_level"
+            app:destination="@id/pilihLevelFragment" />
+
+        <action
+            android:id="@+id/action_dashboard_to_riwayat"
+            app:destination="@id/riwayatNilaiFragment" />
+
+        <action
+            android:id="@+id/action_dashboard_to_latihan"
+            app:destination="@id/latihanFragment" />
+
+        <action
+            android:id="@+id/action_dashboard_to_profil"
+            app:destination="@id/profilFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/materiFragment"
+        android:name="com.app.manfaattumbuhan.presentation.siswa.materi.MateriFragment"
+        android:label="Materi"
+        tools:layout="@layout/fragment_materi">
+
+        <action
+            android:id="@+id/action_materi_to_detail"
+            app:destination="@id/detailMateriFragment" />
+
+        <action
+            android:id="@+id/action_materi_to_latihan"
+            app:destination="@id/latihanFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/detailMateriFragment"
+        android:name="com.app.manfaattumbuhan.presentation.siswa.materi.DetailMateriFragment"
+        android:label="Detail Materi"
+        tools:layout="@layout/fragment_detail_materi">
+
+        <action
+            android:id="@+id/action_detail_to_latihan"
+            app:destination="@id/latihanFragment" />
+
+        <action
+            android:id="@+id/action_detail_to_pilih_level"
+            app:destination="@id/pilihLevelFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/pilihLevelFragment"
+        android:name="com.app.manfaattumbuhan.presentation.siswa.latihan.PilihLevelFragment"
+        android:label="Pilih Level"
+        tools:layout="@layout/fragment_pilih_level">
+
+        <action
+            android:id="@+id/action_pilihLevel_to_latihan"
+            app:destination="@id/latihanFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/latihanFragment"
+        android:name="com.app.manfaattumbuhan.presentation.siswa.latihan.LatihanFragment"
+        android:label="Latihan"
+        tools:layout="@layout/fragment_latihan">
+
+        <action
+            android:id="@+id/action_pilihLevel_to_latihan"
+            app:destination="@id/latihanFragment"
+            app:popUpTo="@id/latihanFragment"
+            app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/action_latihan_to_pilihLevel"
+            app:destination="@id/pilihLevelFragment"
+            app:popUpTo="@id/latihanFragment"
+            app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/action_latihan_to_dashboard"
+            app:destination="@id/siswaDashboardFragment"
+            app:popUpTo="@id/siswaDashboardFragment"
+            app:popUpToInclusive="false" />
+
+        <action
+            android:id="@+id/action_latihan_to_materi"
+            app:destination="@id/materiFragment"
+            app:popUpTo="@id/siswaDashboardFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/riwayatNilaiFragment"
+        android:name="com.app.manfaattumbuhan.presentation.siswa.riwayat.RiwayatNilaiFragment"
+        android:label="Riwayat Nilai"
+        tools:layout="@layout/fragment_riwayat_nilai" />
+
+    <fragment
+        android:id="@+id/profilFragment"
+        android:name="com.app.manfaattumbuhan.presentation.siswa.profil.ProfilFragment"
+        android:label="Profil"
+        tools:layout="@layout/fragment_profil" />
+
+</navigation>

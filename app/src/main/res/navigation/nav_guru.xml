@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_guru"
+    app:startDestination="@id/dashboardGuruFragment">
+
+    <fragment
+        android:id="@+id/dashboardGuruFragment"
+        android:name="com.app.manfaattumbuhan.presentation.guru.dashboard.DashboardGuruFragment"
+        android:label="Dashboard"
+        tools:layout="@layout/fragment_dashboard_guru">
+
+        <action
+            android:id="@+id/action_dashboard_to_profil"
+            app:destination="@id/profilGuruFragment" />
+
+        <action
+            android:id="@+id/action_dashboard_to_materi"
+            app:destination="@id/kelolaMateriFragment" />
+
+        <action
+            android:id="@+id/action_dashboard_to_soal"
+            app:destination="@id/kelolaSoalFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/kelolaMateriFragment"
+        android:name="com.app.manfaattumbuhan.presentation.guru.materi.KelolaMateriFragment"
+        android:label="Kelola Materi"
+        tools:layout="@layout/fragment_kelola_materi">
+
+        <action
+            android:id="@+id/action_materi_guru_to_profil"
+            app:destination="@id/profilGuruFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/kelolaSoalFragment"
+        android:name="com.app.manfaattumbuhan.presentation.guru.soal.KelolaSoalFragment"
+        android:label="Soal"
+        tools:layout="@layout/fragment_kelola_soal">
+
+        <action
+            android:id="@+id/action_soal_to_profil"
+            app:destination="@id/profilGuruFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/kelolaAkunFragment"
+        android:name="com.app.manfaattumbuhan.presentation.guru.akun.KelolaAkunFragment"
+        android:label="Siswa"
+        tools:layout="@layout/fragment_kelola_akun">
+
+        <action
+            android:id="@+id/action_akun_to_profil"
+            app:destination="@id/profilGuruFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/laporanFragment"
+        android:name="com.app.manfaattumbuhan.presentation.guru.laporan.LaporanFragment"
+        android:label="Nilai"
+        tools:layout="@layout/fragment_laporan">
+
+        <action
+            android:id="@+id/action_laporan_to_profil"
+            app:destination="@id/profilGuruFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/profilGuruFragment"
+        android:name="com.app.manfaattumbuhan.presentation.guru.profil.ProfilGuruFragment"
+        android:label="Profil Guru"
+        tools:layout="@layout/fragment_profil_guru" />
+
+</navigation>
