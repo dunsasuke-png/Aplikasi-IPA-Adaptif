@@ -41,6 +41,7 @@ class KelolaMateriViewModel : ViewModel() {
     val filterOffset: LiveData<Int> = MutableLiveData(0)
 
     private var currentFilter: String? = null  // null = semua
+    private var currentSearchQuery = ""
 
     @Volatile private var loadToken: Long = 0L
 
@@ -67,36 +68,19 @@ class KelolaMateriViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                val auth = TokenManager.getToken()
-                val response = apiService.getMateriList(auth, tingkat = tingkat)
+                val tingkatQuery = if (!tingkat.isNullOrBlank()) "eq.$tingkat" else null
+                val response = apiService.getMateriList(
+                    tingkat = tingkatQuery
+                )
 
                 if (loadToken != token) return@launch
 
-                if (response.isSuccessful && response.body()?.success == true) {
-                    val rawMateri = response.body()?.data?.materi ?: emptyList()
-                    val filtered = if (tingkat.isNullOrBlank()) {
-                        rawMateri
-                    } else {
-                        rawMateri.filter { it.tingkat.equals(tingkat, ignoreCase = true) }
-                    }
-                    val allMateri = filtered.sortedWith(compareBy(
-                        { it.created_at ?: "" },
-                        { it.urutan }
-                    ))
-
-                    val totalPages = kotlin.math.max(
-                        1,
-                        kotlin.math.ceil(allMateri.size.toDouble() / ITEMS_PER_PAGE).toInt()
-                    )
-                    val targetPage = preservePage.coerceIn(1, totalPages)
-
+                if (response.isSuccessful) {
+                    val allMateri = response.body() ?: emptyList()
                     _allMateriList.postValue(allMateri)
-                    _totalItems.postValue(allMateri.size)
-                    _totalPages.postValue(totalPages)
-                    _currentPage.postValue(targetPage)
-                    applyPage(allMateri, targetPage)
+                    applyFilterAndPagination(allMateri, preservePage)
                 } else {
-                    _message.postValue("Gagal memuat materi")
+                    _message.postValue("Gagal memuat materi: ${response.code()}")
                 }
             } catch (e: Exception) {
                 _message.postValue("Error: ${e.message}")
@@ -106,22 +90,40 @@ class KelolaMateriViewModel : ViewModel() {
         }
     }
 
-    private fun applyPage(all: List<MateriApi>, page: Int) {
-        val from = (page - 1) * ITEMS_PER_PAGE
-        val to = kotlin.math.min(from + ITEMS_PER_PAGE, all.size)
-        _materiList.postValue(if (from < all.size) all.subList(from, to) else emptyList())
+    fun setSearchQuery(query: String) {
+        currentSearchQuery = query
+        val allMateri = _allMateriList.value ?: return
+        applyFilterAndPagination(allMateri, 1)
     }
 
-    fun setLevelFilter(level: String?) {
-        loadMateri(tingkat = level, preservePage = 1)
+    private fun applyFilterAndPagination(allMateri: List<MateriApi>, targetPage: Int = 1) {
+        var filteredList = allMateri
+        if (currentSearchQuery.isNotBlank()) {
+            filteredList = filteredList.filter {
+                it.nama.contains(currentSearchQuery, ignoreCase = true) ||
+                it.deskripsi.contains(currentSearchQuery, ignoreCase = true) ||
+                it.manfaat.contains(currentSearchQuery, ignoreCase = true)
+            }
+        }
+
+        val totalPages = kotlin.math.max(
+            1,
+            kotlin.math.ceil(filteredList.size.toDouble() / ITEMS_PER_PAGE).toInt()
+        )
+        val safePage = targetPage.coerceIn(1, totalPages)
+
+        _totalItems.postValue(filteredList.size)
+        _totalPages.postValue(totalPages)
+        _currentPage.postValue(safePage)
+
+        val fromIndex = (safePage - 1) * ITEMS_PER_PAGE
+        val toIndex = kotlin.math.min(fromIndex + ITEMS_PER_PAGE, filteredList.size)
+        _materiList.postValue(if (fromIndex < filteredList.size) filteredList.subList(fromIndex, toIndex) else emptyList())
     }
 
     fun goToPage(page: Int) {
         val all = _allMateriList.value ?: return
-        val total = _totalPages.value ?: 1
-        val safePage = page.coerceIn(1, total)
-        _currentPage.value = safePage
-        applyPage(all, safePage)
+        applyFilterAndPagination(all, page)
     }
 
     // ──────────────────────────────────────────────────────────────────────────
@@ -132,38 +134,30 @@ class KelolaMateriViewModel : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val auth = TokenManager.getToken()
+                val guruId = com.app.manfaattumbuhan.data.local.TokenManager.getUserId()
 
-                // Fetch semua materi tanpa filter untuk menghitung urutan yang benar
-                val allMateriUnfiltered = try {
-                    val response = apiService.getMateriList(auth, tingkat = null)
-                    if (response.isSuccessful && response.body()?.success == true) {
-                        response.body()?.data?.materi ?: emptyList()
-                    } else {
-                        emptyList()
-                    }
-                } catch (e: Exception) {
-                    emptyList()
-                }
+                // Hitung urutan berdasarkan semua materi level yang sama
+                val allResponse = apiService.getMateriList(tingkat = "eq.$tingkat")
+                val urutanInLevel = if (allResponse.isSuccessful) {
+                    (allResponse.body() ?: emptyList()).size + 1
+                } else 1
 
-                // Hitung urutan berdasarkan SEMUA materi dengan tingkat yang sama (tidak terpengaruh filter)
-                val urutanInLevel = allMateriUnfiltered.count { it.tingkat.equals(tingkat, ignoreCase = true) } + 1
-
-                val request  = CreateMateriRequest(
+                val request = CreateMateriRequest(
                     nama       = nama,
                     deskripsi  = namaGambar.ifBlank { "-" },
                     manfaat    = manfaat,
                     gambar_url = gambarUrl,
                     video_url  = videoUrl,
                     urutan     = urutanInLevel,
-                    tingkat    = tingkat
+                    tingkat    = tingkat,
+                    guru_id    = guruId
                 )
-                val response = apiService.createMateri(auth, request)
-                if (response.isSuccessful && response.body()?.success == true) {
+                val response = apiService.createMateri(request)
+                if (response.isSuccessful) {
                     _message.postValue("Materi berhasil ditambahkan ke level ${tingkat.replaceFirstChar { it.uppercase() }}")
                     loadMateri(currentFilter, preservePage = _currentPage.value ?: 1)
                 } else {
-                    _message.postValue("Gagal menambahkan materi")
+                    _message.postValue("Gagal menambahkan materi: ${response.code()}")
                 }
             } catch (e: Exception) {
                 _message.postValue("Error: ${e.message}")
@@ -177,8 +171,7 @@ class KelolaMateriViewModel : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val auth     = TokenManager.getToken()
-                val request  = UpdateMateriRequest(
+                val request = UpdateMateriRequest(
                     nama       = nama,
                     deskripsi  = namaGambar.ifBlank { "-" },
                     manfaat    = manfaat,
@@ -186,12 +179,12 @@ class KelolaMateriViewModel : ViewModel() {
                     video_url  = videoUrl,
                     tingkat    = tingkat
                 )
-                val response = apiService.updateMateri(auth, id, request)
-                if (response.isSuccessful && response.body()?.success == true) {
+                val response = apiService.updateMateri("eq.$id", request)
+                if (response.isSuccessful) {
                     _message.postValue("Materi #$displayNumber berhasil diperbarui")
                     loadMateri(currentFilter, preservePage = _currentPage.value ?: 1)
                 } else {
-                    _message.postValue("Gagal memperbarui materi")
+                    _message.postValue("Gagal memperbarui materi: ${response.code()}")
                 }
             } catch (e: Exception) {
                 _message.postValue("Error: ${e.message}")
@@ -205,14 +198,12 @@ class KelolaMateriViewModel : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val auth     = TokenManager.getToken()
-                val response = apiService.deleteMateri(auth, id)
-                val ok = response.isSuccessful && (response.body()?.success != false)
-                if (ok) {
+                val response = apiService.deleteMateri("eq.$id")
+                if (response.isSuccessful) {
                     _message.postValue("Materi #$displayNumber berhasil dihapus")
                     loadMateri(currentFilter, preservePage = _currentPage.value ?: 1)
                 } else {
-                    _message.postValue("Gagal menghapus materi")
+                    _message.postValue("Gagal menghapus materi: ${response.code()}")
                 }
             } catch (e: Exception) {
                 _message.postValue("Error: ${e.message}")

@@ -196,22 +196,24 @@ class ProfilFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                val response = apiService.updateProfil(
-                    token, userId,
+                val response = apiService.updateProfilSiswa(
+                    "eq.$userId",
                     UpdateProfilRequest(nama, password, fotoProfil)
                 )
-                if (response.isSuccessful && response.body()?.success == true) {
-                    val updatedSiswa = response.body()!!.data!!
-                    TokenManager.saveSiswaLogin(
-                        token.removePrefix("Bearer "),
-                        updatedSiswa.id,
-                        updatedSiswa.nama,
-                        updatedSiswa.nisn,
-                        updatedSiswa.kelas,
-                        updatedSiswa.foto_profil
-                    )
-                    if (updatedSiswa.foto_profil != null) {
-                        TokenManager.saveSiswaFoto(updatedSiswa.foto_profil)
+                if (response.isSuccessful) {
+                    val updatedSiswa = response.body()?.firstOrNull()
+                    if (updatedSiswa != null) {
+                        TokenManager.saveSiswaLogin(
+                            "",
+                            updatedSiswa.id,
+                            updatedSiswa.nama,
+                            updatedSiswa.nisn,
+                            updatedSiswa.kelas,
+                            updatedSiswa.foto_profil
+                        )
+                        if (updatedSiswa.foto_profil != null) {
+                            TokenManager.saveSiswaFoto(updatedSiswa.foto_profil)
+                        }
                     }
                     loadProfilData()
                     uploadedFotoUrl = null
@@ -219,7 +221,7 @@ class ProfilFragment : Fragment() {
                 } else {
                     Toast.makeText(
                         requireContext(),
-                        response.body()?.message ?: "Gagal memperbarui profil",
+                        "Gagal memperbarui profil: ${response.code()}",
                         Toast.LENGTH_SHORT
                     ).show()
                 }

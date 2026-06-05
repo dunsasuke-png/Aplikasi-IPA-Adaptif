@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.manfaattumbuhan.data.local.TokenManager
 import com.app.manfaattumbuhan.data.remote.ApiConfig
 import com.app.manfaattumbuhan.data.remote.ApiService
 import com.app.manfaattumbuhan.data.remote.model.CreateSiswaRequest
@@ -16,8 +15,12 @@ class KelolaAkunViewModel : ViewModel() {
 
     private val apiService = ApiConfig.createService<ApiService>()
 
+    private val _originalSiswaList = MutableLiveData<List<SiswaInfo>>()
+
     private val _siswaList = MutableLiveData<List<SiswaInfo>>()
     val siswaList: LiveData<List<SiswaInfo>> = _siswaList
+
+    private var currentSearchQuery = ""
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -29,12 +32,13 @@ class KelolaAkunViewModel : ViewModel() {
         _isLoading.value = true
         viewModelScope.launch {
             try {
-                val token = TokenManager.getToken()
-                val response = apiService.getSiswaList(token)
-                if (response.isSuccessful && response.body()?.success == true) {
-                    _siswaList.postValue(response.body()!!.data!!.siswa)
+                val response = apiService.getSiswaList()
+                if (response.isSuccessful) {
+                    val list = response.body() ?: emptyList()
+                    _originalSiswaList.postValue(list)
+                    applyFilter(list)
                 } else {
-                    _error.postValue(response.body()?.message ?: "Gagal memuat siswa")
+                    _error.postValue("Gagal memuat siswa: ${response.code()}")
                 }
             } catch (e: Exception) {
                 _error.postValue("Error: ${e.message}")
@@ -44,19 +48,38 @@ class KelolaAkunViewModel : ViewModel() {
         }
     }
 
+    fun setSearchQuery(query: String) {
+        currentSearchQuery = query
+        _originalSiswaList.value?.let { applyFilter(it) }
+    }
+
+    private fun applyFilter(list: List<SiswaInfo>) {
+        var processedList = list
+        if (currentSearchQuery.isNotBlank()) {
+            processedList = processedList.filter {
+                it.nama.contains(currentSearchQuery, ignoreCase = true) ||
+                it.nisn.contains(currentSearchQuery, ignoreCase = true) ||
+                it.kelas.contains(currentSearchQuery, ignoreCase = true)
+            }
+        }
+        
+        // Sort by nama (alphabetical)
+        processedList = processedList.sortedBy { it.nama }
+        
+        _siswaList.postValue(processedList)
+    }
+
     fun addSiswa(nisn: String, nama: String, kelas: String, password: String, onSuccess: () -> Unit) {
         viewModelScope.launch {
             try {
-                val token = TokenManager.getToken()
                 val response = apiService.createSiswa(
-                    token,
                     CreateSiswaRequest(nisn, nama, kelas, password)
                 )
-                if (response.isSuccessful && response.body()?.success == true) {
+                if (response.isSuccessful) {
                     loadSiswa()
                     onSuccess()
                 } else {
-                    _error.postValue(response.body()?.message ?: "Gagal menambah siswa")
+                    _error.postValue("Gagal menambah siswa: ${response.code()}")
                 }
             } catch (e: Exception) {
                 _error.postValue("Error: ${e.message}")
@@ -67,16 +90,15 @@ class KelolaAkunViewModel : ViewModel() {
     fun updateSiswa(id: String, nama: String?, nisn: String?, kelas: String?, password: String?, onSuccess: () -> Unit) {
         viewModelScope.launch {
             try {
-                val token = TokenManager.getToken()
                 val response = apiService.updateSiswa(
-                    token, id,
+                    "eq.$id",
                     UpdateSiswaRequest(nisn, nama, kelas, password)
                 )
-                if (response.isSuccessful && response.body()?.success == true) {
+                if (response.isSuccessful) {
                     loadSiswa()
                     onSuccess()
                 } else {
-                    _error.postValue(response.body()?.message ?: "Gagal memperbarui siswa")
+                    _error.postValue("Gagal memperbarui siswa: ${response.code()}")
                 }
             } catch (e: Exception) {
                 _error.postValue("Error: ${e.message}")
@@ -87,13 +109,12 @@ class KelolaAkunViewModel : ViewModel() {
     fun deleteSiswa(id: String, onSuccess: () -> Unit) {
         viewModelScope.launch {
             try {
-                val token = TokenManager.getToken()
-                val response = apiService.deleteSiswa(token, id)
+                val response = apiService.deleteSiswa("eq.$id")
                 if (response.isSuccessful) {
                     loadSiswa()
                     onSuccess()
                 } else {
-                    _error.postValue("Gagal menghapus siswa")
+                    _error.postValue("Gagal menghapus siswa: ${response.code()}")
                 }
             } catch (e: Exception) {
                 _error.postValue("Error: ${e.message}")

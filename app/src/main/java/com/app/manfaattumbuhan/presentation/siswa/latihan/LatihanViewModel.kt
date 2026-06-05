@@ -76,10 +76,11 @@ class LatihanViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                val token = TokenManager.getToken()
-                val response = apiService.getSoalList(token, tingkat = apiTingkat, limit = 100)
-                if (response.isSuccessful && response.body()?.success == true) {
-                    val soalApiList = response.body()!!.data!!.soal
+                val response = apiService.getSoalList(
+                    tingkat = "eq.$apiTingkat"
+                )
+                if (response.isSuccessful) {
+                    val soalApiList = response.body() ?: emptyList()
                     val soalList = soalApiList.mapIndexedNotNull { index, soalApi ->
                         parseSoalFromApi(index, soalApi)
                     }
@@ -96,7 +97,7 @@ class LatihanViewModel : ViewModel() {
                         _loadError.postValue("Belum ada soal untuk tingkat $tingkat")
                     }
                 } else {
-                    _loadError.postValue(response.body()?.message ?: "Gagal memuat soal")
+                    _loadError.postValue("Gagal memuat soal: ${response.code()}")
                 }
             } catch (e: Exception) {
                 _loadError.postValue("Error: ${e.message}")

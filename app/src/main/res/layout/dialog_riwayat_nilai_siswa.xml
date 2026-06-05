@@ -37,10 +37,12 @@
                 android:textSize="14sp" />
         </LinearLayout>
 
-        <ImageView
+        <ImageButton
+            android:id="@+id/btnSortDialog"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/ic_chart"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_filter"
             app:tint="@color/green_primary" />
     </LinearLayout>
 

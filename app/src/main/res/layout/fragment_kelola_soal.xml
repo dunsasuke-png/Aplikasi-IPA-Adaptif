@@ -110,6 +110,22 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
+    <EditText
+        android:id="@+id/etSearchSoal"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_rounded_white"
+        android:drawableStart="@drawable/ic_search"
+        android:drawablePadding="8dp"
+        android:elevation="2dp"
+        android:hint="Cari pertanyaan soal..."
+        android:paddingHorizontal="16dp"
+        android:textColorHint="@color/gray_text"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@+id/cardAction" />
+
     <!-- Filter Tingkat Soal -->
     <HorizontalScrollView
         android:id="@+id/scrollFilters"
@@ -118,7 +134,7 @@
         android:layout_marginTop="16dp"
         android:scrollbars="none"
         android:paddingHorizontal="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/cardAction">
+        app:layout_constraintTop_toBottomOf="@+id/etSearchSoal">
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/chipGroupFilter"

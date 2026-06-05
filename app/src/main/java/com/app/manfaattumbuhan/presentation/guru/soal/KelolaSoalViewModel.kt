@@ -41,6 +41,7 @@ class KelolaSoalViewModel : ViewModel() {
     val totalItems: LiveData<Int> = _totalItems
 
     private var currentFilter: String? = null
+    private var currentSearchQuery = ""
 
     /**
      * Token untuk mencegah race condition: kalau user cepat ganti filter,
@@ -70,27 +71,20 @@ class KelolaSoalViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                val auth = TokenManager.getToken()
-                val response = apiService.getSoalList(auth, tingkat = tingkat)
+                val tingkatQuery = if (!tingkat.isNullOrBlank()) "eq.$tingkat" else null
+                val response = apiService.getSoalList(
+                    tingkat = tingkatQuery
+                )
 
                 // If a newer load started, ignore this response.
                 if (loadToken != token) return@launch
 
-                if (response.isSuccessful && response.body()?.success == true) {
-                    val allSoal = response.body()!!.data!!.soal
-                        .sortedBy { it.nomor }
-
-                    val totalPages = kotlin.math.max(1, kotlin.math.ceil(allSoal.size.toDouble() / ITEMS_PER_PAGE).toInt())
-                    // Clamp to valid range: if items were deleted, don't go beyond last page
-                    val targetPage = preservePage.coerceIn(1, totalPages)
-
+                if (response.isSuccessful) {
+                    val allSoal = response.body() ?: emptyList()
                     _allSoalList.postValue(allSoal)
-                    _totalItems.postValue(allSoal.size)
-                    _totalPages.postValue(totalPages)
-                    _currentPage.postValue(targetPage)
-                    applyPage(allSoal, targetPage)
+                    applyFilterAndPagination(allSoal, preservePage)
                 } else {
-                    _error.postValue(response.body()?.message ?: "Gagal memuat soal")
+                    _error.postValue("Gagal memuat soal: ${response.code()}")
                 }
             } catch (e: Exception) {
                 _error.postValue("Error: ${e.message}")
@@ -102,34 +96,50 @@ class KelolaSoalViewModel : ViewModel() {
         }
     }
 
-    private fun applyPage(allSoal: List<SoalApi>, page: Int) {
-        val fromIndex = (page - 1) * ITEMS_PER_PAGE
-        val toIndex = kotlin.math.min(fromIndex + ITEMS_PER_PAGE, allSoal.size)
-        _soalList.postValue(if (fromIndex < allSoal.size) allSoal.subList(fromIndex, toIndex) else emptyList())
+    fun setSearchQuery(query: String) {
+        currentSearchQuery = query
+        val allSoal = _allSoalList.value ?: return
+        applyFilterAndPagination(allSoal, 1)
+    }
+
+    private fun applyFilterAndPagination(allSoal: List<SoalApi>, targetPage: Int = 1) {
+        var filteredList = allSoal
+        if (currentSearchQuery.isNotBlank()) {
+            filteredList = filteredList.filter {
+                it.judul.contains(currentSearchQuery, ignoreCase = true) || 
+                it.deskripsi.contains(currentSearchQuery, ignoreCase = true)
+            }
+        }
+
+        val totalPages = kotlin.math.max(1, kotlin.math.ceil(filteredList.size.toDouble() / ITEMS_PER_PAGE).toInt())
+        val safePage = targetPage.coerceIn(1, totalPages)
+
+        _totalItems.postValue(filteredList.size)
+        _totalPages.postValue(totalPages)
+        _currentPage.postValue(safePage)
+
+        val fromIndex = (safePage - 1) * ITEMS_PER_PAGE
+        val toIndex = kotlin.math.min(fromIndex + ITEMS_PER_PAGE, filteredList.size)
+        _soalList.postValue(if (fromIndex < filteredList.size) filteredList.subList(fromIndex, toIndex) else emptyList())
     }
 
     fun goToPage(page: Int) {
         val allSoal = _allSoalList.value ?: return
-        val total = _totalPages.value ?: 1
-        val safePage = page.coerceIn(1, total)
-        _currentPage.value = safePage
-        applyPage(allSoal, safePage)
+        applyFilterAndPagination(allSoal, page)
     }
 
     fun addSoal(judul: String, deskripsi: String, fotoUrl: String? = null, videoUrl: String? = null, tingkat: String = "pretest") {
         viewModelScope.launch {
             try {
-                val token = TokenManager.getToken()
+                val guruId = com.app.manfaattumbuhan.data.local.TokenManager.getUserId()
                 val response = apiService.createSoal(
-                    token,
-                    CreateSoalRequest(judul, deskripsi, videoUrl, fotoUrl, tingkat)
+                    CreateSoalRequest(judul, deskripsi, videoUrl, fotoUrl, tingkat, guruId)
                 )
-                if (response.isSuccessful && response.body()?.success == true) {
+                if (response.isSuccessful) {
                     _message.postValue("Soal berhasil ditambahkan")
-                    // Stay on current page after adding
                     loadSoal(currentFilter, preservePage = _currentPage.value ?: 1)
                 } else {
-                    _error.postValue(response.body()?.message ?: "Gagal membuat soal")
+                    _error.postValue("Gagal membuat soal: ${response.code()}")
                 }
             } catch (e: Exception) {
                 _error.postValue("Error: ${e.message}")
@@ -140,17 +150,15 @@ class KelolaSoalViewModel : ViewModel() {
     fun updateSoal(id: String, judul: String, deskripsi: String, fotoUrl: String? = null, videoUrl: String? = null, tingkat: String? = null, displayNumber: Int = 0) {
         viewModelScope.launch {
             try {
-                val token = TokenManager.getToken()
                 val response = apiService.updateSoal(
-                    token, id,
+                    "eq.$id",
                     UpdateSoalRequest(judul, deskripsi, videoUrl, fotoUrl, tingkat)
                 )
-                if (response.isSuccessful && response.body()?.success == true) {
+                if (response.isSuccessful) {
                     _message.postValue("Soal No. $displayNumber berhasil diperbarui")
-                    // Stay on current page after editing
                     loadSoal(currentFilter, preservePage = _currentPage.value ?: 1)
                 } else {
-                    _error.postValue(response.body()?.message ?: "Gagal memperbarui soal")
+                    _error.postValue("Gagal memperbarui soal: ${response.code()}")
                 }
             } catch (e: Exception) {
                 _error.postValue("Error: ${e.message}")
@@ -161,20 +169,13 @@ class KelolaSoalViewModel : ViewModel() {
     fun deleteSoal(id: String, displayNumber: Int = 0) {
         viewModelScope.launch {
             try {
-                val token = TokenManager.getToken()
-                val response = apiService.deleteSoal(token, id)
-
-                // Beberapa endpoint DELETE mungkin tidak mengembalikan body ApiResponse yang lengkap.
-                // Jadi anggap sukses jika HTTP sukses dan (jika ada body) success != false.
-                val ok = response.isSuccessful && (response.body()?.success != false)
-
-                if (ok) {
+                val response = apiService.deleteSoal("eq.$id")
+                if (response.isSuccessful) {
                     _message.postValue("Soal No. $displayNumber berhasil dihapus")
-                    // After delete: try to stay on current page; if page is now empty, go to previous page
                     val pageAfterDelete = _currentPage.value ?: 1
                     loadSoal(currentFilter, preservePage = pageAfterDelete)
                 } else {
-                    _error.postValue(response.body()?.message ?: "Gagal menghapus soal")
+                    _error.postValue("Gagal menghapus soal: ${response.code()}")
                 }
             } catch (e: Exception) {
                 _error.postValue("Error: ${e.message}")

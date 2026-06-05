@@ -36,6 +36,22 @@ class RiwayatNilaiAdapter : ListAdapter<NilaiApi, RiwayatNilaiAdapter.ViewHolder
             holder.binding.tvTingkat.text = item.soal?.judul ?: formatSoalId(item.soal_id ?: "")
             holder.binding.tvDetail.text = item.catatan ?: "-"
         }
+
+        val detailsList = mutableListOf<String>()
+        if (item.waktu_pengerjaan != null) {
+            val minutes = item.waktu_pengerjaan / 60
+            val seconds = item.waktu_pengerjaan % 60
+            val timeStr = if (minutes > 0) "${minutes}m ${seconds}s" else "${seconds}s"
+            detailsList.add("Waktu: $timeStr")
+        }
+        if (!item.kesulitan_sebelumnya.isNullOrBlank() && !isPreTest) {
+            detailsList.add("Sebelumnya: ${item.kesulitan_sebelumnya.replaceFirstChar { it.uppercase() }}")
+        }
+
+        if (detailsList.isNotEmpty()) {
+            holder.binding.tvDetail.text = "${holder.binding.tvDetail.text}\n${detailsList.joinToString("\n")}"
+        }
+
         holder.binding.tvTanggal.text = item.created_at?.take(10) ?: "-"
         holder.binding.tvNilai.text = String.format("%.0f", item.nilai)
     }

@@ -1,9 +1,12 @@
 package com.app.manfaattumbuhan.presentation.guru.laporan
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
@@ -74,11 +77,29 @@ class LaporanFragment : Fragment() {
             findNavController().navigate(R.id.action_laporan_to_profil)
         }
 
+        // Search listener
+        binding.etSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                viewModel.setSearchQuery(s.toString())
+                currentPage = 1 // Reset to first page on search
+            }
+        })
+
         viewModel.loadData()
 
         viewModel.laporanList.observe(viewLifecycleOwner) { list ->
             fullLaporanList = list
             updateLaporanUI()
+        }
+
+        viewModel.rataKelas.observe(viewLifecycleOwner) { rata ->
+            binding.tvRataKelas.text = String.format("%.1f", rata)
+        }
+
+        viewModel.totalSiswa.observe(viewLifecycleOwner) { total ->
+            binding.tvTotalSiswa.text = total.toString()
         }
 
         viewModel.error.observe(viewLifecycleOwner) { err ->
@@ -121,6 +142,8 @@ class LaporanFragment : Fragment() {
         val tvEmpty = dialogView.findViewById<android.widget.TextView>(R.id.tvEmptyState)
         val rvRiwayat = dialogView.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvRiwayatDialog)
         
+        val btnSort = dialogView.findViewById<android.widget.ImageButton>(R.id.btnSortDialog)
+        
         val btnPrev = dialogView.findViewById<android.widget.ImageButton>(R.id.btnPrevPageDialog)
         val btnNext = dialogView.findViewById<android.widget.ImageButton>(R.id.btnNextPageDialog)
         val tvIndicator = dialogView.findViewById<android.widget.TextView>(R.id.tvPageIndicatorDialog)
@@ -135,10 +158,19 @@ class LaporanFragment : Fragment() {
 
         var dialogCurrentPage = 1
         val dialogPageSize = 6
-        val sortedList = item.nilaiList.sortedByDescending { it.created_at }
+        var isSortByHighestScore = false // default: sort by date descending
+
+        fun getSortedList(): List<com.app.manfaattumbuhan.data.remote.model.NilaiApi> {
+            return if (isSortByHighestScore) {
+                item.nilaiList.sortedByDescending { it.nilai }
+            } else {
+                item.nilaiList.sortedByDescending { it.created_at }
+            }
+        }
 
         fun updateDialogUI() {
-            if (sortedList.isEmpty()) {
+            val currentSortedList = getSortedList()
+            if (currentSortedList.isEmpty()) {
                 tvEmpty.visibility = View.VISIBLE
                 rvRiwayat.visibility = View.GONE
                 layoutPagination?.visibility = View.GONE
@@ -149,10 +181,10 @@ class LaporanFragment : Fragment() {
             rvRiwayat.visibility = View.VISIBLE
             layoutPagination?.visibility = View.VISIBLE
 
-            val maxPage = (sortedList.size + dialogPageSize - 1) / dialogPageSize
+            val maxPage = (currentSortedList.size + dialogPageSize - 1) / dialogPageSize
             val start = (dialogCurrentPage - 1) * dialogPageSize
-            val end = (start + dialogPageSize).coerceAtMost(sortedList.size)
-            val pagedList = sortedList.subList(start, end)
+            val end = (start + dialogPageSize).coerceAtMost(currentSortedList.size)
+            val pagedList = currentSortedList.subList(start, end)
 
             riwayatAdapter.submitList(pagedList)
             tvIndicator?.text = "Halaman $dialogCurrentPage dari $maxPage"
@@ -163,6 +195,14 @@ class LaporanFragment : Fragment() {
             btnNext?.alpha = if (dialogCurrentPage < maxPage) 1.0f else 0.3f
         }
 
+        btnSort?.setOnClickListener {
+            isSortByHighestScore = !isSortByHighestScore
+            dialogCurrentPage = 1
+            updateDialogUI()
+            val msg = if (isSortByHighestScore) "Diurutkan: Nilai Tertinggi" else "Diurutkan: Terbaru"
+            Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+        }
+
         btnPrev?.setOnClickListener {
             if (dialogCurrentPage > 1) {
                 dialogCurrentPage--
@@ -171,7 +211,8 @@ class LaporanFragment : Fragment() {
         }
 
         btnNext?.setOnClickListener {
-            val maxPage = (sortedList.size + dialogPageSize - 1) / dialogPageSize
+            val currentListSize = getSortedList().size
+            val maxPage = (currentListSize + dialogPageSize - 1) / dialogPageSize
             if (dialogCurrentPage < maxPage) {
                 dialogCurrentPage++
                 updateDialogUI()

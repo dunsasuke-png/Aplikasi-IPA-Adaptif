@@ -28,6 +28,8 @@ class RiwayatNilaiFragment : Fragment() {
     private var currentPage = 1
     private val pageSize = 6
     private lateinit var adapter: RiwayatNilaiAdapter
+    private var isSortAscending = false
+    private var isSortedByNilai = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -65,6 +67,15 @@ class RiwayatNilaiFragment : Fragment() {
             }
         }
 
+        binding.btnSort.setOnClickListener {
+            isSortedByNilai = true
+            isSortAscending = !isSortAscending
+            val sortMsg = if (isSortAscending) "Urut berdasarkan: Nilai Terendah" else "Urut berdasarkan: Nilai Tertinggi"
+            android.widget.Toast.makeText(requireContext(), sortMsg, android.widget.Toast.LENGTH_SHORT).show()
+            currentPage = 1
+            updateUI()
+        }
+
         loadData()
     }
 
@@ -93,11 +104,17 @@ class RiwayatNilaiFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                val response = apiService.getNilaiList(token, userId)
-                if (response.isSuccessful && response.body()?.success == true) {
-                    val apiNilai = response.body()!!.data!!.nilai
-                    val combined = mergeNilai(apiNilai, localNilai)
-                    showList(combined)
+                val response = apiService.getNilaiList("eq.$userId")
+                if (response.isSuccessful) {
+                    val apiNilai = response.body() ?: emptyList()
+                    // Jika API berhasil dan ada data → tampilkan API saja (tidak merge)
+                    // Ini mencegah duplikat antara data Supabase dan cache lokal
+                    if (apiNilai.isNotEmpty()) {
+                        showList(apiNilai)
+                    } else {
+                        // API kosong → fallback ke local
+                        showList(localNilai)
+                    }
                 } else {
                     showList(localNilai)
                 }
@@ -107,35 +124,13 @@ class RiwayatNilaiFragment : Fragment() {
         }
     }
 
-    private fun mergeNilai(apiList: List<NilaiApi>, localList: List<NilaiApi>): List<NilaiApi> {
-        val apiKeys = apiList.map { api ->
-            val normalized = normalizeSoalId(api.soal_id)
-            if (normalized == "pretest") {
-                "pretest"
-            } else {
-                normalized + api.nilai.toString() + (api.created_at?.take(10) ?: "")
-            }
-        }.toSet()
-
-        val uniqueLocal = localList.filter { local ->
-            val normalized = normalizeSoalId(local.soal_id)
-            val key = if (normalized == "pretest") {
-                "pretest"
-            } else {
-                normalized + local.nilai.toString() + (local.created_at?.take(10) ?: "")
-            }
-            key !in apiKeys
-        }
-        return (apiList + uniqueLocal)
-    }
-
     private fun normalizeSoalId(soalId: String): String {
         val lowered = soalId.lowercase(Locale.ROOT)
         return lowered.replace("latihan-", "").replace("pre-test", "pretest")
     }
 
     private fun showList(list: List<NilaiApi>) {
-        fullNilaiList = list.sortedByDescending { it.created_at }
+        fullNilaiList = list
         currentPage = 1
         updateUI()
     }
@@ -152,12 +147,22 @@ class RiwayatNilaiFragment : Fragment() {
         binding.rvRiwayat.visibility = View.VISIBLE
         binding.layoutPagination.visibility = View.VISIBLE
 
-        val maxPage = (fullNilaiList.size + pageSize - 1) / pageSize
+        val sortedList = if (isSortedByNilai) {
+            if (isSortAscending) {
+                fullNilaiList.sortedBy { it.nilai }
+            } else {
+                fullNilaiList.sortedByDescending { it.nilai }
+            }
+        } else {
+            fullNilaiList.sortedByDescending { it.created_at }
+        }
+
+        val maxPage = (sortedList.size + pageSize - 1) / pageSize
         if (currentPage > maxPage && maxPage > 0) currentPage = maxPage
 
         val start = (currentPage - 1) * pageSize
-        val end = (start + pageSize).coerceAtMost(fullNilaiList.size)
-        val pagedList = fullNilaiList.subList(start, end)
+        val end = (start + pageSize).coerceAtMost(sortedList.size)
+        val pagedList = sortedList.subList(start, end)
 
         adapter.submitList(pagedList)
         binding.tvPageIndicator.text = "Halaman $currentPage dari $maxPage"

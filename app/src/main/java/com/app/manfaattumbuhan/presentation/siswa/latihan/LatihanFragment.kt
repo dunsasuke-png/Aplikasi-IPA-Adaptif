@@ -204,8 +204,7 @@ class LatihanFragment : Fragment() {
             if (finished) {
                 stopTimer()
                 val score = viewModel.score.value ?: 0
-                saveNilai(score)
-                showResultDialog(score)
+                handleFinishQuiz(score)
             }
         }
 
@@ -238,43 +237,7 @@ class LatihanFragment : Fragment() {
         timerHandler.removeCallbacks(timerRunnable)
     }
 
-    private fun saveNilai(score: Int) {
-        val dateFormat = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale("id"))
-        val userId = TokenManager.getUserId()
-        val userName = TokenManager.getUserName()
-
-        if (userId.isNotBlank()) {
-            val nilai = NilaiSiswa(
-                id = System.currentTimeMillis().toInt(),
-                siswaId = userId,
-                namaSiswa = userName,
-                tingkat = tingkat,
-                nilai = score,
-                totalSoal = viewModel.getTotalSoal(),
-                benar = viewModel.getCorrectCount(),
-                tanggal = dateFormat.format(Date())
-            )
-            StaticData.addNilaiSiswa(nilai)
-        }
-
-        val token = TokenManager.getToken()
-        if (token.isNotBlank() && userId.isNotBlank()) {
-            viewLifecycleOwner.lifecycleScope.launch {
-                try {
-                    apiService.createNilai(
-                        token, userId,
-                        CreateNilaiRequest(
-                            soal_id = "latihan-$tingkat",
-                            nilai = score.toDouble(),
-                            catatan = "Benar ${viewModel.getCorrectCount()} dari ${viewModel.getTotalSoal()} - Level $tingkat"
-                        )
-                    )
-                } catch (_: Exception) {}
-            }
-        }
-    }
-
-    private fun showResultDialog(score: Int) {
+    private fun handleFinishQuiz(score: Int) {
         val userIdStr = TokenManager.getUserId()
         val userIdInt = userIdStr.hashCode()
 
@@ -291,6 +254,63 @@ class LatihanFragment : Fragment() {
         val fuzzyResult = FuzzyMamdani.calculate(ketepatan, kecepatanDetik, tingkatSebelumnya)
         val assignedLevel = fuzzyResult.outputLevel
         val fuzzyValue = fuzzyResult.outputValue
+
+        saveNilaiToDbAndLocal(score, assignedLevel)
+        showResultDialog(score, ketepatan, tingkatSebelumnya, assignedLevel, fuzzyValue)
+    }
+
+    private fun saveNilaiToDbAndLocal(score: Int, assignedLevel: String) {
+        val dateFormat = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale("id"))
+        val userId = TokenManager.getUserId()
+        val userName = TokenManager.getUserName()
+
+        val jumlahBenar = viewModel.getCorrectCount()
+        val jumlahSoal = viewModel.getTotalSoal()
+        val waktuPengerjaanDetik = viewModel.getTotalTimeSeconds().toInt()
+
+        if (userId.isNotBlank()) {
+            val nilai = NilaiSiswa(
+                id = System.currentTimeMillis().toInt(),
+                siswaId = userId,
+                namaSiswa = userName,
+                tingkat = tingkat,
+                nilai = score,
+                totalSoal = jumlahSoal,
+                benar = jumlahBenar,
+                tanggal = dateFormat.format(Date())
+            )
+            StaticData.addNilaiSiswa(nilai)
+        }
+
+        if (userId.isNotBlank()) {
+            viewLifecycleOwner.lifecycleScope.launch {
+                try {
+                    val response = apiService.createNilai(
+                        CreateNilaiRequest(
+                            siswa_id = userId,
+                            soal_id = "latihan-$tingkat",
+                            nilai = score.toDouble(),
+                            catatan = "Benar $jumlahBenar dari $jumlahSoal - Level $tingkat",
+                            jumlah_benar = jumlahBenar,
+                            jumlah_soal = jumlahSoal,
+                            waktu_pengerjaan = waktuPengerjaanDetik,
+                            kesulitan_sebelumnya = tingkat,
+                            kesulitan_selanjutnya = assignedLevel
+                        )
+                    )
+                    if (!response.isSuccessful) {
+                        android.util.Log.e("LatihanFragment", "createNilai gagal: ${response.code()} - ${response.errorBody()?.string()}")
+                    }
+                } catch (e: Exception) {
+                    android.util.Log.e("LatihanFragment", "createNilai error: ${e.message}")
+                }
+            }
+        }
+    }
+
+    private fun showResultDialog(score: Int, ketepatan: Double, tingkatSebelumnya: Double, assignedLevel: String, fuzzyValue: Double) {
+        val userIdStr = TokenManager.getUserId()
+        val userIdInt = userIdStr.hashCode()
 
         // Save fuzzy output for next iteration
         StaticData.setFuzzyOutputValue(userIdInt, fuzzyValue)
@@ -348,15 +368,24 @@ class LatihanFragment : Fragment() {
             else     -> "#000000"
         }
 
-        val messageHtml = """
-            Nilai: $score (Benar ${viewModel.getCorrectCount()}/${viewModel.getTotalSoal()})<br/>
-            Waktu: $timeFormatted<br/>
-            <br/>
-            Ketepatan: ${String.format("%.0f", ketepatan)}%<br/>
-            Tingkat sebelumnya: ${String.format("%.1f", tingkatSebelumnya)}<br/>
-            <br/>
-            Sistem menempatkan kamu di level: <b><font color="$levelColor">$assignedLevel</font></b>
-        """.trimIndent()
+        val messageHtml = if (tingkat == "Pre-test") {
+            """
+                Nilai: $score (Benar ${viewModel.getCorrectCount()}/${viewModel.getTotalSoal()})<br/>
+                Waktu: $timeFormatted<br/>
+                <br/>
+                Sistem menempatkan kamu di level: <b><font color="$levelColor">$assignedLevel</font></b>
+            """.trimIndent()
+        } else {
+            """
+                Nilai: $score (Benar ${viewModel.getCorrectCount()}/${viewModel.getTotalSoal()})<br/>
+                Waktu: $timeFormatted<br/>
+                <br/>
+                Ketepatan: ${String.format(Locale.US, "%.0f", ketepatan)}%<br/>
+                Tingkat sebelumnya: ${String.format(Locale.US, "%.1f", tingkatSebelumnya)}<br/>
+                <br/>
+                Sistem menempatkan kamu di level: <b><font color="$levelColor">$assignedLevel</font></b>
+            """.trimIndent()
+        }
 
         val formattedMessage = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
             android.text.Html.fromHtml(messageHtml, android.text.Html.FROM_HTML_MODE_LEGACY)

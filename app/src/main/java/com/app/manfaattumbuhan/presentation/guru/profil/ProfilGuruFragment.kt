@@ -85,9 +85,11 @@ class ProfilGuruFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                val response = apiService.getGuruProfil(token)
-                if (response.isSuccessful && response.body()?.success == true) {
-                    val guru = response.body()!!.data!!
+                val userId = TokenManager.getUserId()
+                if (userId.isBlank()) return@launch
+                val response = apiService.getGuruById("eq.$userId")
+                if (response.isSuccessful) {
+                    val guru = response.body()?.firstOrNull() ?: return@launch
                     TokenManager.saveGuruInfo(
                         sekolah = guru.sekolah ?: "",
                         mapel = guru.mapel ?: ""
@@ -95,10 +97,8 @@ class ProfilGuruFragment : Fragment() {
                     if (!guru.foto_profil.isNullOrBlank()) {
                         TokenManager.saveGuruFoto(guru.foto_profil)
                     }
-                    val currentToken = TokenManager.getToken()
-                    val userId = TokenManager.getUserId()
                     TokenManager.saveGuruLogin(
-                        token = currentToken.removePrefix("Bearer "),
+                        token = "",
                         id = userId,
                         nama = guru.nama,
                         nip = guru.nip,
@@ -260,18 +260,20 @@ class ProfilGuruFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                val response = apiService.updateGuruProfil(token, request)
-                if (response.isSuccessful && response.body()?.success == true) {
-                    val guru = response.body()!!.data!!
-                    TokenManager.saveGuruLogin(
-                        token = token.removePrefix("Bearer "),
-                        id = userId,
-                        nama = guru.nama,
-                        nip = guru.nip,
-                        sekolah = guru.sekolah,
-                        mapel = guru.mapel,
-                        fotoProfil = guru.foto_profil
-                    )
+                val response = apiService.updateGuruProfil("eq.$userId", request)
+                if (response.isSuccessful) {
+                    val guru = response.body()?.firstOrNull()
+                    if (guru != null) {
+                        TokenManager.saveGuruLogin(
+                            token = "",
+                            id = userId,
+                            nama = guru.nama,
+                            nip = guru.nip,
+                            sekolah = guru.sekolah,
+                            mapel = guru.mapel,
+                            fotoProfil = guru.foto_profil
+                        )
+                    }
                     loadProfilData()
                     Toast.makeText(requireContext(), successMsg, Toast.LENGTH_SHORT).show()
                 } else {

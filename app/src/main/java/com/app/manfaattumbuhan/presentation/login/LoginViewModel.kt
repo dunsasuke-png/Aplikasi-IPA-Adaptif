@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.manfaattumbuhan.data.remote.ApiConfig
 import com.app.manfaattumbuhan.data.remote.ApiService
-import com.app.manfaattumbuhan.data.remote.model.LoginGuruRequest
-import com.app.manfaattumbuhan.data.remote.model.LoginSiswaRequest
+import com.app.manfaattumbuhan.data.remote.model.RpcLoginGuruRequest
+import com.app.manfaattumbuhan.data.remote.model.RpcLoginSiswaRequest
 import com.app.manfaattumbuhan.domain.model.UserRole
 import kotlinx.coroutines.launch
 
@@ -61,43 +61,55 @@ class LoginViewModel : ViewModel() {
     }
 
     private suspend fun loginGuru(nama: String, password: String) {
-        val response = apiService.loginGuru(LoginGuruRequest(nama, password))
-        if (response.isSuccessful && response.body()?.success == true) {
-            val data = response.body()!!.data!!
-            _loginResult.postValue(
-                LoginResult.GuruSuccess(
-                    token = data.token,
-                    id = data.guru.id,
-                    nama = data.guru.nama,
-                    nip = data.guru.nip,
-                    sekolah = data.guru.sekolah,
-                    mapel = data.guru.mapel,
-                    fotoProfil = data.guru.foto_profil
+        // Supabase RPC: verify bcrypt password via PostgreSQL function
+        val response = apiService.loginGuru(
+            RpcLoginGuruRequest(p_nama = nama, p_password = password)
+        )
+        if (response.isSuccessful) {
+            val guru = response.body()?.firstOrNull()
+            if (guru != null) {
+                _loginResult.postValue(
+                    LoginResult.GuruSuccess(
+                        token = "",
+                        id = guru.id,
+                        nama = guru.nama,
+                        nip = guru.nip,
+                        sekolah = guru.sekolah,
+                        mapel = guru.mapel,
+                        fotoProfil = guru.foto_profil
+                    )
                 )
-            )
+            } else {
+                _loginResult.postValue(LoginResult.Error("Username atau password salah"))
+            }
         } else {
-            val errorMsg = "Username atau password salah"
-            _loginResult.postValue(LoginResult.Error(errorMsg))
+            _loginResult.postValue(LoginResult.Error("Gagal login: ${response.code()}"))
         }
     }
 
     private suspend fun loginSiswa(nisn: String, password: String) {
-        val response = apiService.loginSiswa(LoginSiswaRequest(nisn, password))
-        if (response.isSuccessful && response.body()?.success == true) {
-            val data = response.body()!!.data!!
-            _loginResult.postValue(
-                LoginResult.SiswaSuccess(
-                    token = data.token,
-                    id = data.siswa.id,
-                    nama = data.siswa.nama,
-                    nisn = data.siswa.nisn,
-                    kelas = data.siswa.kelas,
-                    fotoProfil = data.siswa.foto_profil
+        // Supabase RPC: verify bcrypt password via PostgreSQL function
+        val response = apiService.loginSiswa(
+            RpcLoginSiswaRequest(p_nisn = nisn, p_password = password)
+        )
+        if (response.isSuccessful) {
+            val siswa = response.body()?.firstOrNull()
+            if (siswa != null) {
+                _loginResult.postValue(
+                    LoginResult.SiswaSuccess(
+                        token = "",
+                        id = siswa.id,
+                        nama = siswa.nama,
+                        nisn = siswa.nisn,
+                        kelas = siswa.kelas,
+                        fotoProfil = siswa.foto_profil
+                    )
                 )
-            )
+            } else {
+                _loginResult.postValue(LoginResult.Error("NISN atau password salah"))
+            }
         } else {
-            val errorMsg = "NISN atau password salah"
-            _loginResult.postValue(LoginResult.Error(errorMsg))
+            _loginResult.postValue(LoginResult.Error("Gagal login: ${response.code()}"))
         }
     }
 }

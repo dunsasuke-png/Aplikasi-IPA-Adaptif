@@ -1,7 +1,6 @@
 package com.app.manfaattumbuhan.data.repository
 
 import com.app.manfaattumbuhan.data.local.StaticData
-import com.app.manfaattumbuhan.data.local.TokenManager
 import com.app.manfaattumbuhan.data.remote.ApiConfig
 import com.app.manfaattumbuhan.data.remote.ApiService
 import com.app.manfaattumbuhan.domain.model.Tumbuhan
@@ -20,28 +19,21 @@ class TumbuhanRepositoryImpl : TumbuhanRepository {
     }
 
     /**
-     * Ambil materi dari server, difilter per tingkat (mudah/sedang/sulit).
-     * Persis seperti pola getSoalList — server yang memfilter, bukan client.
+     * Ambil materi langsung dari Supabase REST API.
+     * Supabase return List<MateriApi> langsung (flat JSON, tanpa wrapper).
+     * Filter tingkat via query param, urutan via order=urutan.asc.
      */
     suspend fun getAllTumbuhanFromApi(tingkat: String? = null): List<Tumbuhan> {
         return try {
-            val token = TokenManager.getToken()
-            val response = apiService.getMateriList(token, tingkat = tingkat)
-            if (response.isSuccessful && response.body()?.success == true) {
-                val materiList = response.body()?.data?.materi ?: emptyList()
-                val filtered = if (tingkat.isNullOrBlank()) {
-                    materiList
-                } else {
-                    val target = tingkat.lowercase()
-                    materiList.filter { it.tingkat.equals(target, ignoreCase = true) }
-                }
-                val sorted = filtered.sortedWith(compareBy(
-                    { it.created_at ?: "" },  // urut berdasarkan waktu dibuat
-                    { it.urutan }              // fallback
-                ))
-                sorted.mapIndexed { index, materi ->
+            val tingkatQuery = if (!tingkat.isNullOrBlank()) "eq.$tingkat" else null
+            val response = apiService.getMateriList(
+                tingkat = tingkatQuery
+            )
+            if (response.isSuccessful) {
+                val materiList = response.body() ?: emptyList()
+                materiList.mapIndexed { index, materi ->
                     Tumbuhan(
-                        id        = index + 1,      // nomor relatif dalam tingkat ini
+                        id        = index + 1,
                         nama      = materi.nama,
                         deskripsi = materi.deskripsi,
                         manfaat   = materi.manfaat,

@@ -1,166 +1,157 @@
 package com.app.manfaattumbuhan.data.remote
 
 import com.app.manfaattumbuhan.data.remote.model.*
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.*
 
 interface ApiService {
 
-    // Auth
-    @POST("api/auth/login-guru")
+    // ==================== AUTH via RPC (bcrypt) ====================
+
+    @POST("rest/v1/rpc/login_guru")
     suspend fun loginGuru(
-        @Body request: LoginGuruRequest
-    ): Response<ApiResponse<LoginGuruResponse>>
+        @Body request: RpcLoginGuruRequest
+    ): Response<List<GuruInfo>>
 
-    @POST("api/auth/login-siswa")
+    @POST("rest/v1/rpc/login_siswa")
     suspend fun loginSiswa(
-        @Body request: LoginSiswaRequest
-    ): Response<ApiResponse<LoginSiswaResponse>>
+        @Body request: RpcLoginSiswaRequest
+    ): Response<List<SiswaInfo>>
 
-    // Siswa (Guru Only)
-    @GET("api/siswa")
-    suspend fun getSiswaList(
-        @Header("Authorization") token: String,
-        @Query("kelas") kelas: String? = null,
-        @Query("status") status: String? = null,
-        @Query("search") search: String? = null,
-        @Query("page") page: Int = 1,
-        @Query("limit") limit: Int = 100
-    ): Response<ApiResponse<SiswaListResponse>>
+    // Get profil guru by id
+    @GET("rest/v1/guru")
+    suspend fun getGuruById(
+        @Query("id") idEq: String,   // format: eq.uuid
+        @Query("select") select: String = "*"
+    ): Response<List<GuruInfo>>
 
-    @POST("api/siswa")
-    suspend fun createSiswa(
-        @Header("Authorization") token: String,
-        @Body request: CreateSiswaRequest
-    ): Response<ApiResponse<SiswaInfo>>
-
-    @GET("api/siswa/{id}")
-    suspend fun getSiswaDetail(
-        @Header("Authorization") token: String,
-        @Path("id") id: String
-    ): Response<ApiResponse<SiswaInfo>>
-
-    @PUT("api/siswa/{id}")
-    suspend fun updateSiswa(
-        @Header("Authorization") token: String,
-        @Path("id") id: String,
-        @Body request: UpdateSiswaRequest
-    ): Response<ApiResponse<SiswaInfo>>
-
-    @DELETE("api/siswa/{id}")
-    suspend fun deleteSiswa(
-        @Header("Authorization") token: String,
-        @Path("id") id: String
-    ): Response<ApiResponse<Nothing>>
-
-    // Profil Siswa
-    @PATCH("api/siswa/{id}/profil")
-    suspend fun updateProfil(
-        @Header("Authorization") token: String,
-        @Path("id") id: String,
-        @Body request: UpdateProfilRequest
-    ): Response<ApiResponse<SiswaInfo>>
-
-    // Nilai
-    @GET("api/siswa/{id}/nilai")
-    suspend fun getNilaiList(
-        @Header("Authorization") token: String,
-        @Path("id") siswaId: String,
-        @Query("page") page: Int = 1,
-        @Query("limit") limit: Int = 100
-    ): Response<ApiResponse<NilaiListResponse>>
-
-    @POST("api/siswa/{id}/nilai")
-    suspend fun createNilai(
-        @Header("Authorization") token: String,
-        @Path("id") siswaId: String,
-        @Body request: CreateNilaiRequest
-    ): Response<ApiResponse<NilaiApi>>
-
-    // Profil Guru
-    @GET("api/guru/profil")
-    suspend fun getGuruProfil(
-        @Header("Authorization") token: String
-    ): Response<ApiResponse<GuruInfo>>
-
-    @PATCH("api/guru/profil")
+    // Update profil guru
+    @PATCH("rest/v1/guru")
     suspend fun updateGuruProfil(
-        @Header("Authorization") token: String,
+        @Query("id") idEq: String,
         @Body request: UpdateGuruProfilRequest
-    ): Response<ApiResponse<GuruInfo>>
+    ): Response<List<GuruInfo>>
 
-    // Soal (Guru Only)
-    @GET("api/guru/soal")
-    suspend fun getSoalList(
-        @Header("Authorization") token: String,
-        @Query("search") search: String? = null,
-        @Query("tingkat") tingkat: String? = null,
-        @Query("page") page: Int = 1,
-        @Query("limit") limit: Int = 100
-    ): Response<ApiResponse<SoalListResponse>>
+    // ==================== SISWA ====================
 
-    @POST("api/guru/soal")
-    suspend fun createSoal(
-        @Header("Authorization") token: String,
-        @Body request: CreateSoalRequest
-    ): Response<ApiResponse<SoalApi>>
+    // Get all siswa (Guru Only)
+    @GET("rest/v1/siswa")
+    suspend fun getSiswaList(
+        @Query("select") select: String = "*",
+        @Query("kelas") kelas: String? = null,    // format: eq.kelas
+        @Query("status") status: String? = null,  // format: eq.aktif
+        @Query("order") order: String = "created_at.desc"
+    ): Response<List<SiswaInfo>>
 
-    @GET("api/guru/soal/{id}")
-    suspend fun getSoalDetail(
-        @Header("Authorization") token: String,
-        @Path("id") id: String
-    ): Response<ApiResponse<SoalApi>>
+    // Get siswa by id
+    @GET("rest/v1/siswa")
+    suspend fun getSiswaById(
+        @Query("id") idEq: String,
+        @Query("select") select: String = "*"
+    ): Response<List<SiswaInfo>>
 
-    @PUT("api/guru/soal/{id}")
-    suspend fun updateSoal(
-        @Header("Authorization") token: String,
-        @Path("id") id: String,
-        @Body request: UpdateSoalRequest
-    ): Response<ApiResponse<SoalApi>>
+    // Create siswa
+    @POST("rest/v1/siswa")
+    suspend fun createSiswa(
+        @Body request: CreateSiswaRequest
+    ): Response<List<SiswaInfo>>
 
-    @DELETE("api/guru/soal/{id}")
-    suspend fun deleteSoal(
-        @Header("Authorization") token: String,
-        @Path("id") id: String
-    ): Response<ApiResponse<Nothing>>
+    // Update siswa
+    @PATCH("rest/v1/siswa")
+    suspend fun updateSiswa(
+        @Query("id") idEq: String,
+        @Body request: UpdateSiswaRequest
+    ): Response<List<SiswaInfo>>
 
-    // Materi (Guru)
-    @GET("api/guru/materi")
+    // Update profil siswa
+    @PATCH("rest/v1/siswa")
+    suspend fun updateProfilSiswa(
+        @Query("id") idEq: String,
+        @Body request: UpdateProfilRequest
+    ): Response<List<SiswaInfo>>
+
+    // Delete siswa
+    @DELETE("rest/v1/siswa")
+    suspend fun deleteSiswa(
+        @Query("id") idEq: String
+    ): Response<Unit>
+
+    // ==================== MATERI ====================
+
+    @GET("rest/v1/materi")
     suspend fun getMateriList(
-        @Header("Authorization") token: String,
-        @Query("search") search: String? = null,
-        @Query("tingkat") tingkat: String? = null,
-        @Query("page") page: Int = 1,
-        @Query("limit") limit: Int = 100
-    ): Response<ApiResponse<MateriListResponse>>
+        @Query("select") select: String = "*",
+        @Query("tingkat") tingkat: String? = null,  // format: eq.mudah
+        @Query("guru_id") guruId: String? = null,   // format: eq.uuid
+        @Query("order") order: String = "urutan.asc"
+    ): Response<List<MateriApi>>
 
-    @POST("api/guru/materi")
+    @GET("rest/v1/materi")
+    suspend fun getMateriById(
+        @Query("id") idEq: String,
+        @Query("select") select: String = "*"
+    ): Response<List<MateriApi>>
+
+    @POST("rest/v1/materi")
     suspend fun createMateri(
-        @Header("Authorization") token: String,
         @Body request: CreateMateriRequest
-    ): Response<ApiResponse<MateriApi>>
+    ): Response<List<MateriApi>>
 
-    @PUT("api/guru/materi/{id}")
+    @PATCH("rest/v1/materi")
     suspend fun updateMateri(
-        @Header("Authorization") token: String,
-        @Path("id") id: String,
+        @Query("id") idEq: String,
         @Body request: UpdateMateriRequest
-    ): Response<ApiResponse<MateriApi>>
+    ): Response<List<MateriApi>>
 
-    @DELETE("api/guru/materi/{id}")
+    @DELETE("rest/v1/materi")
     suspend fun deleteMateri(
-        @Header("Authorization") token: String,
-        @Path("id") id: String
-    ): Response<ApiResponse<Nothing>>
+        @Query("id") idEq: String
+    ): Response<Unit>
 
-    // Upload
-    @Multipart
-    @POST("api/upload")
-    suspend fun uploadFile(
-        @Header("Authorization") token: String,
-        @Part file: MultipartBody.Part,
-        @Part("type") type: RequestBody
-    ): Response<ApiResponse<UploadResponse>>
+    // ==================== SOAL ====================
+
+    @GET("rest/v1/soal")
+    suspend fun getSoalList(
+        @Query("select") select: String = "*",
+        @Query("tingkat") tingkat: String? = null,  // format: eq.pretest
+        @Query("guru_id") guruId: String? = null,
+        @Query("order") order: String = "created_at.desc"
+    ): Response<List<SoalApi>>
+
+    @GET("rest/v1/soal")
+    suspend fun getSoalById(
+        @Query("id") idEq: String,
+        @Query("select") select: String = "*"
+    ): Response<List<SoalApi>>
+
+    @POST("rest/v1/soal")
+    suspend fun createSoal(
+        @Body request: CreateSoalRequest
+    ): Response<List<SoalApi>>
+
+    @PATCH("rest/v1/soal")
+    suspend fun updateSoal(
+        @Query("id") idEq: String,
+        @Body request: UpdateSoalRequest
+    ): Response<List<SoalApi>>
+
+    @DELETE("rest/v1/soal")
+    suspend fun deleteSoal(
+        @Query("id") idEq: String
+    ): Response<Unit>
+
+    // ==================== NILAI ====================
+
+    @GET("rest/v1/nilai")
+    suspend fun getNilaiList(
+        @Query("siswa_id") siswaIdEq: String,
+        @Query("select") select: String = "*",   // tanpa join soal, soal_id bisa berupa text
+        @Query("order") order: String = "created_at.desc"
+    ): Response<List<NilaiApi>>
+
+    @POST("rest/v1/nilai")
+    @Headers("Prefer: return=representation")
+    suspend fun createNilai(
+        @Body request: CreateNilaiRequest
+    ): Response<List<NilaiApi>>
 }
