@@ -35,11 +35,10 @@ object FuzzyMamdani {
     // a = lower bound (mu=0), b = peak (mu=1), c = upper bound (mu=0)
     private fun triangularMF(x: Double, a: Double, b: Double, c: Double): Double {
         return when {
-            a == b && x <= b -> 1.0  // left shoulder
-            b == c && x >= b -> 1.0  // right shoulder
-            x <= a || x >= c -> 0.0
-            x in a..b -> (x - a) / (b - a)
-            x in b..c -> (c - x) / (c - b)
+            x < a || x > c -> 0.0
+            x == b -> 1.0
+            x >= a && x < b -> (x - a) / (b - a)
+            x > b && x <= c -> (c - x) / (c - b)
             else -> 0.0
         }
     }
@@ -48,12 +47,10 @@ object FuzzyMamdani {
     // Supports left shoulder (a==b && b==c) and right shoulder (b==c && c==d)
     private fun trapezoidalMF(x: Double, a: Double, b: Double, c: Double, d: Double): Double {
         return when {
-            a == b && b == c && x <= c -> 1.0
-            b == c && c == d && x >= b -> 1.0
-            x <= a || x >= d -> 0.0
-            x > a && x < b -> (x - a) / (b - a)
+            x < a || x > d -> 0.0
             x >= b && x <= c -> 1.0
-            x > c && x < d -> (d - x) / (d - c)
+            x >= a && x < b -> (x - a) / (b - a)
+            x > c && x <= d -> (d - x) / (d - c)
             else -> 0.0
         }
     }
@@ -61,24 +58,24 @@ object FuzzyMamdani {
     // === MEMBERSHIP FUNCTIONS ===
 
     // Ketepatan (accuracy %, 0-100)
-    private fun ketepatan_rendah(x: Double) = trapezoidalMF(x, 0.0, 0.0, 0.0, 50.0)
+    private fun ketepatan_rendah(x: Double) = trapezoidalMF(x, 0.0, 0.0, 40.0, 50.0)
     private fun ketepatan_sedang(x: Double) = triangularMF(x, 40.0, 60.0, 80.0)
-    private fun ketepatan_tinggi(x: Double) = trapezoidalMF(x, 70.0, 100.0, 100.0, 100.0)
+    private fun ketepatan_tinggi(x: Double) = trapezoidalMF(x, 70.0, 80.0, 100.0, 100.0)
 
-    // Kecepatan (time in seconds per soal, 0-60)
-    private fun kecepatan_cepat(x: Double) = trapezoidalMF(x, 0.0, 0.0, 0.0, 20.0)
-    private fun kecepatan_sedang(x: Double) = triangularMF(x, 10.0, 25.0, 40.0)
-    private fun kecepatan_lambat(x: Double) = trapezoidalMF(x, 30.0, 60.0, 60.0, 60.0)
+    // Kecepatan (time in seconds per session, 0-1000)
+    private fun kecepatan_cepat(x: Double) = trapezoidalMF(x, 0.0, 0.0, 360.0, 480.0)
+    private fun kecepatan_sedang(x: Double) = triangularMF(x, 360.0, 480.0, 780.0)
+    private fun kecepatan_lambat(x: Double) = trapezoidalMF(x, 480.0, 780.0, 1000.0, 1000.0)
 
     // Tingkat Kesulitan Sebelumnya (0-100)
-    private fun tingkatSblm_mudah(x: Double) = trapezoidalMF(x, 0.0, 0.0, 0.0, 40.0)
+    private fun tingkatSblm_mudah(x: Double) = trapezoidalMF(x, 0.0, 0.0, 30.0, 40.0)
     private fun tingkatSblm_sedang(x: Double) = triangularMF(x, 30.0, 50.0, 70.0)
-    private fun tingkatSblm_sulit(x: Double) = trapezoidalMF(x, 60.0, 100.0, 100.0, 100.0)
+    private fun tingkatSblm_sulit(x: Double) = trapezoidalMF(x, 60.0, 70.0, 100.0, 100.0)
 
     // Output - Tingkat Kesulitan (0-100)
-    private fun output_mudah(x: Double) = trapezoidalMF(x, 0.0, 0.0, 0.0, 40.0)
+    private fun output_mudah(x: Double) = trapezoidalMF(x, 0.0, 0.0, 30.0, 40.0)
     private fun output_sedang(x: Double) = triangularMF(x, 30.0, 50.0, 70.0)
-    private fun output_sulit(x: Double) = trapezoidalMF(x, 60.0, 100.0, 100.0, 100.0)
+    private fun output_sulit(x: Double) = trapezoidalMF(x, 60.0, 70.0, 100.0, 100.0)
 
     // Rule base: 27 rules
     // (ketepatan, kecepatan, tingkatSebelumnya) -> output
@@ -95,7 +92,7 @@ object FuzzyMamdani {
         Rule(1, "Tinggi", "Cepat", "Mudah", "Sedang"),
         Rule(2, "Tinggi", "Sedang", "Mudah", "Sedang"),
         Rule(3, "Tinggi", "Lambat", "Mudah", "Mudah"),
-        Rule(4, "Sedang", "Cepat", "Mudah", "Sedang"),
+        Rule(4, "Sedang", "Cepat", "Mudah", "Mudah"),
         Rule(5, "Sedang", "Sedang", "Mudah", "Mudah"),
         Rule(6, "Sedang", "Lambat", "Mudah", "Mudah"),
         Rule(7, "Rendah", "Cepat", "Mudah", "Mudah"),
@@ -116,19 +113,32 @@ object FuzzyMamdani {
         // Tingkat sebelumnya = Sulit (rules 19-27)
         Rule(19, "Tinggi", "Cepat", "Sulit", "Sulit"),
         Rule(20, "Tinggi", "Sedang", "Sulit", "Sulit"),
-        Rule(21, "Tinggi", "Lambat", "Sulit", "Sedang"),
+        Rule(21, "Tinggi", "Lambat", "Sulit", "Sulit"),
         Rule(22, "Sedang", "Cepat", "Sulit", "Sulit"),
         Rule(23, "Sedang", "Sedang", "Sulit", "Sedang"),
         Rule(24, "Sedang", "Lambat", "Sulit", "Sedang"),
         Rule(25, "Rendah", "Cepat", "Sulit", "Sedang"),
-        Rule(26, "Rendah", "Sedang", "Sulit", "Mudah"),
+        Rule(26, "Rendah", "Sedang", "Sulit", "Sedang"),
         Rule(27, "Rendah", "Lambat", "Sulit", "Mudah")
+    )
+
+    // Pre-test rule base: 9 rules
+    private val pretestRules = listOf(
+        Rule(1, "Tinggi", "Cepat", "Mudah", "Sulit"),
+        Rule(2, "Tinggi", "Sedang", "Mudah", "Sulit"),
+        Rule(3, "Tinggi", "Lambat", "Mudah", "Sedang"),
+        Rule(4, "Sedang", "Cepat", "Mudah", "Sedang"),
+        Rule(5, "Sedang", "Sedang", "Mudah", "Sedang"),
+        Rule(6, "Sedang", "Lambat", "Mudah", "Mudah"),
+        Rule(7, "Rendah", "Cepat", "Mudah", "Mudah"),
+        Rule(8, "Rendah", "Sedang", "Mudah", "Mudah"),
+        Rule(9, "Rendah", "Lambat", "Mudah", "Mudah")
     )
 
     /**
      * Calculate fuzzy output
      * @param ketepatan Percentage of correct answers (0-100)
-     * @param kecepatanDetik Average time per question in seconds (0-60)
+     * @param kecepatanDetik Total time spent in seconds (0-1000)
      * @param tingkatSebelumnya Previous difficulty level value (0-100). Use 0.0 for pre-test.
      */
     fun calculate(ketepatan: Double, kecepatanDetik: Double, tingkatSebelumnya: Double): FuzzyResult {
@@ -159,10 +169,13 @@ object FuzzyMamdani {
             "Sulit" to 0.0
         )
 
-        for (rule in rules) {
+        val isPretest = tingkatSebelumnya == 0.0
+        val activeRulesList = if (isPretest) pretestRules else rules
+
+        for (rule in activeRulesList) {
             val muK = muKetepatan[rule.ketepatan] ?: 0.0
             val muKec = muKecepatan[rule.kecepatan] ?: 0.0
-            val muTS = muTingkatSblm[rule.tingkatSebelumnya] ?: 0.0
+            val muTS = if (isPretest) 1.0 else muTingkatSblm[rule.tingkatSebelumnya] ?: 0.0
 
             val firingStrength = min(muK, min(muKec, muTS))
 

@@ -109,9 +109,20 @@ class KelolaAkunFragment : Fragment() {
     private fun updateUI() {
         if (fullSiswaList.isEmpty()) {
             adapter.submitList(emptyList())
+            val query = binding.etSearchSiswa.text.toString().trim()
+            if (query.isNotBlank()) {
+                binding.tvEmptyState.text = "Siswa dengan nama \"$query\" tidak ditemukan."
+            } else {
+                binding.tvEmptyState.text = "Belum ada siswa yang terdaftar."
+            }
+            binding.tvEmptyState.visibility = View.VISIBLE
+            binding.rvSiswa.visibility = View.GONE
             binding.layoutPagination.visibility = View.GONE
             return
         }
+
+        binding.tvEmptyState.visibility = View.GONE
+        binding.rvSiswa.visibility = View.VISIBLE
 
         binding.layoutPagination.visibility = View.VISIBLE
         val maxPage = (fullSiswaList.size + pageSize - 1) / pageSize

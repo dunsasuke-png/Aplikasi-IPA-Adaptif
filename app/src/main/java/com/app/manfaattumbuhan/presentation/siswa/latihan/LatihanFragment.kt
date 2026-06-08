@@ -243,7 +243,7 @@ class LatihanFragment : Fragment() {
 
         // Fuzzy inputs
         val ketepatan = viewModel.getKetepatanPersen()
-        val kecepatanDetik = viewModel.getAverageTimePerSoal()
+        val kecepatanDetik = viewModel.getTotalTimeSeconds()
         val tingkatSebelumnya = if (tingkat == "Pre-test") {
             0.0
         } else {
@@ -368,7 +368,7 @@ class LatihanFragment : Fragment() {
             else     -> "#000000"
         }
 
-        val messageHtml = if (tingkat == "Pre-test") {
+        var messageHtml = if (tingkat == "Pre-test") {
             """
                 Nilai: $score (Benar ${viewModel.getCorrectCount()}/${viewModel.getTotalSoal()})<br/>
                 Waktu: $timeFormatted<br/>
@@ -387,6 +387,10 @@ class LatihanFragment : Fragment() {
             """.trimIndent()
         }
 
+        if (tingkat == "Sulit" && assignedLevel == "Sulit") {
+            messageHtml += "<br/><br/>🎉 <b>Selamat!</b> Kamu telah menguasai level tertinggi dengan sangat baik!"
+        }
+
         val formattedMessage = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
             android.text.Html.fromHtml(messageHtml, android.text.Html.FROM_HTML_MODE_LEGACY)
         } else {
@@ -398,10 +402,14 @@ class LatihanFragment : Fragment() {
             .setTitle(title)
             .setMessage(formattedMessage)
             .setCancelable(false)
-            .setPositiveButton("Lanjut ke Materi") { _, _ ->
-                // Clean the Beranda tab backstack first so it only contains the dashboard
-                findNavController().popBackStack(R.id.siswaDashboardFragment, false)
 
+        if (tingkat == "Sulit" && assignedLevel == "Sulit") {
+            dialogBuilder.setPositiveButton("Ke Beranda") { _, _ ->
+                findNavController().popBackStack(R.id.siswaDashboardFragment, false)
+            }
+        } else {
+            dialogBuilder.setPositiveButton("Lanjut ke Materi") { _, _ ->
+                findNavController().popBackStack(R.id.siswaDashboardFragment, false)
                 val bottomNav = requireActivity().findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavSiswa)
                 if (bottomNav != null) {
                     bottomNav.selectedItemId = R.id.materiFragment
@@ -409,10 +417,10 @@ class LatihanFragment : Fragment() {
                     findNavController().navigate(R.id.action_latihan_to_materi)
                 }
             }
-            .setNegativeButton("Ke Beranda") { _, _ ->
-                // Simply pop back to the clean dashboard
+            dialogBuilder.setNegativeButton("Ke Beranda") { _, _ ->
                 findNavController().popBackStack(R.id.siswaDashboardFragment, false)
             }
+        }
 
         dialogBuilder.show()
     }
@@ -427,7 +435,7 @@ class LatihanFragment : Fragment() {
         val mediaItem = MediaItem.fromUri(Uri.parse(videoUrl))
         player.setMediaItem(mediaItem)
         player.prepare()
-        player.playWhenReady = false
+        player.playWhenReady = true
     }
 
     private fun releasePlayer() {

@@ -24,28 +24,46 @@ class RiwayatNilaiAdapter : ListAdapter<NilaiApi, RiwayatNilaiAdapter.ViewHolder
         val isPreTest = item.soal_id?.contains("pre-test", ignoreCase = true) == true || 
                         item.soal?.judul?.contains("pre-test", ignoreCase = true) == true
                         
-        if (isPreTest) {
-            holder.binding.tvTingkat.text = "Pre-test"
-            val rawCatatan = item.catatan ?: ""
-            if (rawCatatan.contains(" - Level")) {
-                holder.binding.tvDetail.text = rawCatatan.substringBefore(" - Level")
-            } else {
-                holder.binding.tvDetail.text = rawCatatan
-            }
+        val rawCatatan = item.catatan ?: "-"
+        val cleanCatatan = if (rawCatatan.contains(" - Level")) {
+            rawCatatan.substringBefore(" - Level")
         } else {
-            holder.binding.tvTingkat.text = item.soal?.judul ?: formatSoalId(item.soal_id ?: "")
-            holder.binding.tvDetail.text = item.catatan ?: "-"
+            rawCatatan
         }
 
+        if (isPreTest) {
+            holder.binding.tvTingkat.text = "Pre-test"
+        } else {
+            holder.binding.tvTingkat.text = item.soal?.judul ?: formatSoalId(item.soal_id ?: "")
+        }
+        
+        holder.binding.tvDetail.text = cleanCatatan
+
         val detailsList = mutableListOf<String>()
-        if (item.waktu_pengerjaan != null) {
-            val minutes = item.waktu_pengerjaan / 60
-            val seconds = item.waktu_pengerjaan % 60
+        val waktu = item.waktu_pengerjaan
+        if (waktu != null && waktu > 0) {
+            val minutes = waktu / 60
+            val seconds = waktu % 60
             val timeStr = if (minutes > 0) "${minutes}m ${seconds}s" else "${seconds}s"
             detailsList.add("Waktu: $timeStr")
+        } else {
+            detailsList.add("Waktu: -")
         }
-        if (!item.kesulitan_sebelumnya.isNullOrBlank() && !isPreTest) {
-            detailsList.add("Sebelumnya: ${item.kesulitan_sebelumnya.replaceFirstChar { it.uppercase() }}")
+
+        if (!isPreTest) {
+            val sblm = item.kesulitan_sebelumnya
+            if (!sblm.isNullOrBlank()) {
+                detailsList.add("Sebelumnya: ${sblm.replaceFirstChar { it.uppercase() }}")
+            } else {
+                detailsList.add("Sebelumnya: -")
+            }
+        }
+
+        val slnjt = item.kesulitan_selanjutnya
+        if (!slnjt.isNullOrBlank()) {
+            detailsList.add("Rekomendasi: ${slnjt.replaceFirstChar { it.uppercase() }}")
+        } else {
+            detailsList.add("Rekomendasi: -")
         }
 
         if (detailsList.isNotEmpty()) {

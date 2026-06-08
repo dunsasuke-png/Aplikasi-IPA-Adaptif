@@ -87,6 +87,18 @@ class LaporanFragment : Fragment() {
             }
         })
 
+        // Sort listener
+        binding.btnSort.setOnClickListener {
+            viewModel.toggleSort()
+            currentPage = 1
+            val sortMsg = when (viewModel.getSortState()) {
+                1 -> "Diurutkan: Rata-rata Tertinggi"
+                2 -> "Diurutkan: Rata-rata Terendah"
+                else -> "Diurutkan: Nama A-Z"
+            }
+            Toast.makeText(requireContext(), sortMsg, Toast.LENGTH_SHORT).show()
+        }
+
         viewModel.loadData()
 
         viewModel.laporanList.observe(viewLifecycleOwner) { list ->
@@ -109,6 +121,12 @@ class LaporanFragment : Fragment() {
 
     private fun updateLaporanUI() {
         if (fullLaporanList.isEmpty()) {
+            val query = binding.etSearch.text.toString().trim()
+            if (query.isNotBlank()) {
+                binding.tvEmptyState.text = "Siswa dengan nama \"$query\" tidak ditemukan."
+            } else {
+                binding.tvEmptyState.text = "Belum ada data pengerjaan soal."
+            }
             binding.tvEmptyState.visibility = View.VISIBLE
             binding.rvLaporan.visibility = View.GONE
             binding.layoutPagination.visibility = View.GONE
@@ -158,13 +176,13 @@ class LaporanFragment : Fragment() {
 
         var dialogCurrentPage = 1
         val dialogPageSize = 6
-        var isSortByHighestScore = false // default: sort by date descending
+        var isSortAscending = false
 
         fun getSortedList(): List<com.app.manfaattumbuhan.data.remote.model.NilaiApi> {
-            return if (isSortByHighestScore) {
-                item.nilaiList.sortedByDescending { it.nilai }
+            return if (isSortAscending) {
+                item.nilaiList.sortedBy { it.nilai }
             } else {
-                item.nilaiList.sortedByDescending { it.created_at }
+                item.nilaiList.sortedByDescending { it.nilai }
             }
         }
 
@@ -196,10 +214,10 @@ class LaporanFragment : Fragment() {
         }
 
         btnSort?.setOnClickListener {
-            isSortByHighestScore = !isSortByHighestScore
+            isSortAscending = !isSortAscending
             dialogCurrentPage = 1
             updateDialogUI()
-            val msg = if (isSortByHighestScore) "Diurutkan: Nilai Tertinggi" else "Diurutkan: Terbaru"
+            val msg = if (isSortAscending) "Diurutkan: Nilai Terendah" else "Diurutkan: Nilai Tertinggi"
             Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
         }
 

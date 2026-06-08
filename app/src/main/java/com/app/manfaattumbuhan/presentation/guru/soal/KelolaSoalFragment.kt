@@ -233,7 +233,17 @@ class KelolaSoalFragment : Fragment() {
 
             // Submit a new list instance to force RecyclerView rebind reliably.
             adapter.submitList(list.toList())
-            binding.tvEmptyState.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
+            if (list.isEmpty()) {
+                val query = binding.etSearchSoal.text.toString().trim()
+                if (query.isNotBlank()) {
+                    binding.tvEmptyState.text = "Soal dengan judul \"$query\" tidak ditemukan."
+                } else {
+                    binding.tvEmptyState.text = "Belum ada soal."
+                }
+                binding.tvEmptyState.visibility = View.VISIBLE
+            } else {
+                binding.tvEmptyState.visibility = View.GONE
+            }
         }
 
         viewModel.totalItems.observe(viewLifecycleOwner) { total ->

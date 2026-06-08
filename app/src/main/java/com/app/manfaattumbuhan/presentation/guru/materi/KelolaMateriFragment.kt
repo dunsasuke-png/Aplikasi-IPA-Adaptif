@@ -230,7 +230,17 @@ class KelolaMateriFragment : Fragment() {
             val filterOffset  = viewModel.filterOffset.value ?: 0
             adapter.pageOffset = filterOffset + (currentPage - 1) * KelolaMateriViewModel.ITEMS_PER_PAGE
             adapter.submitList(list.toList())
-            binding.tvEmptyState.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
+            if (list.isEmpty()) {
+                val query = binding.etSearchMateri.text.toString().trim()
+                if (query.isNotBlank()) {
+                    binding.tvEmptyState.text = "Materi dengan judul \"$query\" tidak ditemukan."
+                } else {
+                    binding.tvEmptyState.text = "Belum ada materi."
+                }
+                binding.tvEmptyState.visibility = View.VISIBLE
+            } else {
+                binding.tvEmptyState.visibility = View.GONE
+            }
         }
 
         viewModel.totalItems.observe(viewLifecycleOwner) { total ->

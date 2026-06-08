@@ -26,6 +26,13 @@ class LaporanAdapter(
         holder.binding.tvNamaSiswa.text = item.siswa.nama
         holder.binding.tvTingkat.text = "Kelas: ${item.siswa.kelas}"
         holder.binding.tvTanggal.text = "NISN: ${item.siswa.nisn}"
+        holder.binding.tvRataRata.text = "Rata-rata: ${String.format(java.util.Locale.US, "%.1f", item.rataRata)}"
+        
+        if (item.rataRata < 76.0) {
+            holder.binding.tvRataRata.setTextColor(androidx.core.content.ContextCompat.getColor(holder.itemView.context, com.app.manfaattumbuhan.R.color.red_button))
+        } else {
+            holder.binding.tvRataRata.setTextColor(androidx.core.content.ContextCompat.getColor(holder.itemView.context, com.app.manfaattumbuhan.R.color.green_primary))
+        }
         holder.binding.tvDetail.text = "${item.nilaiList.size} nilai"
         holder.binding.root.setOnClickListener {
             onItemClick(item)

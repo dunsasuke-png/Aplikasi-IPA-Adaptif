@@ -38,6 +38,7 @@ class LaporanViewModel : ViewModel() {
     val error: LiveData<String?> = _error
 
     private var currentSearchQuery = ""
+    private var sortState = 0 // 0 = Nama A-Z, 1 = Rata-rata Tertinggi, 2 = Rata-rata Terendah
 
     fun loadData() {
         _isLoading.value = true
@@ -82,6 +83,13 @@ class LaporanViewModel : ViewModel() {
         _originalLaporanList.value?.let { applyFilterAndSort(it) }
     }
 
+    fun toggleSort() {
+        sortState = (sortState + 1) % 3
+        _originalLaporanList.value?.let { applyFilterAndSort(it) }
+    }
+
+    fun getSortState(): Int = sortState
+
     private fun applyFilterAndSort(list: List<LaporanItem>) {
         // Calculate Stats based on original unfiltered list
         _totalSiswa.postValue(list.size)
@@ -98,8 +106,12 @@ class LaporanViewModel : ViewModel() {
             }
         }
 
-        // Sort by nama (alphabetical) by default
-        processedList = processedList.sortedBy { it.siswa.nama }
+        // Sort
+        processedList = when (sortState) {
+            1 -> processedList.sortedByDescending { it.rataRata }
+            2 -> processedList.sortedBy { it.rataRata }
+            else -> processedList.sortedBy { it.siswa.nama }
+        }
 
         _laporanList.postValue(processedList)
     }
